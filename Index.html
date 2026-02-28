@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AWS Kinesis: Data Streams vs Firehose</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --streams: #00d4ff;
+    --firehose: #ff6b35;
+    --accent: #a78bfa;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --border: rgba(255,255,255,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Animated grid bg */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: 
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 40px 24px; position: relative; z-index: 1; }
+
+  /* Header */
+  .header { text-align: center; margin-bottom: 60px; }
+  .aws-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #ff9900, #ff6b00);
+    color: #000;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 3px;
+    letter-spacing: 2px;
+    margin-bottom: 16px;
+  }
+  h1 {
+    font-size: clamp(28px, 5vw, 52px);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 12px;
+  }
+  h1 .stream-color { color: var(--streams); }
+  h1 .fire-color { color: var(--firehose); }
+  .subtitle { color: var(--muted); font-size: 16px; }
+
+  /* Cards */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 48px;
+  }
+  @media (max-width: 700px) { .cards-grid { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--surface);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+    animation: fadeUp 0.6s ease both;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .card.streams::before { background: linear-gradient(90deg, var(--streams), #0094b3); }
+  .card.firehose::before { background: linear-gradient(90deg, var(--firehose), #c44a1a); }
+
+  .card-icon { font-size: 32px; margin-bottom: 12px; }
+  .card-title { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+  .streams .card-title { color: var(--streams); }
+  .firehose .card-title { color: var(--firehose); }
+  .card-desc { color: var(--muted); font-size: 14px; line-height: 1.6; margin-bottom: 20px; }
+
+  .tag-list { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .streams .tag { background: rgba(0,212,255,0.1); color: var(--streams); border: 1px solid rgba(0,212,255,0.2); }
+  .firehose .tag { background: rgba(255,107,53,0.1); color: var(--firehose); border: 1px solid rgba(255,107,53,0.2); }
+
+  /* Comparison Table */
+  .section-title {
+    font-size: 20px; font-weight: 800;
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-title::after {
+    content: ''; flex: 1;
+    height: 1px; background: var(--border);
+  }
+
+  .comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 48px;
+    font-size: 14px;
+  }
+  .comparison-table th {
+    padding: 14px 16px;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    text-align: left;
+    background: var(--surface2);
+  }
+  .comparison-table th:nth-child(2) { color: var(--streams); }
+  .comparison-table th:nth-child(3) { color: var(--firehose); }
+  .comparison-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+  .comparison-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .comparison-table td:first-child { color: var(--muted); font-weight: 600; font-size: 13px; white-space: nowrap; }
+
+  /* Diagrams */
+  .diagrams-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 48px;
+  }
+  @media (max-width: 700px) { .diagrams-grid { grid-template-columns: 1fr; } }
+
+  .diagram-card {
+    background: var(--surface);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    padding: 24px;
+    animation: fadeUp 0.7s ease both;
+  }
+  .diagram-title {
+    font-size: 15px; font-weight: 800;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .streams .diagram-title { color: var(--streams); }
+  .firehose .diagram-title { color: var(--firehose); }
+
+  /* Flow diagram */
+  .flow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  .flow-node {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--surface2);
+    border-radius: 10px;
+    padding: 10px 16px;
+    width: 100%;
+    border: 1px solid var(--border);
+    font-size: 13px;
+    font-weight: 600;
+    position: relative;
+  }
+  .flow-node .icon { font-size: 18px; }
+  .flow-node .label { flex: 1; }
+  .flow-node .sub { font-size: 11px; color: var(--muted); font-weight: 400; font-family: 'Space Mono', monospace; }
+
+  .flow-arrow {
+    width: 2px;
+    height: 24px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .flow-arrow::before {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 2px;
+    left: 50%;
+  }
+  .flow-arrow::after {
+    content: '▼';
+    font-size: 10px;
+    position: absolute;
+    bottom: 0;
+  }
+  .streams .flow-arrow::before { background: var(--streams); }
+  .streams .flow-arrow::after { color: var(--streams); }
+  .firehose .flow-arrow::before { background: var(--firehose); }
+  .firehose .flow-arrow::after { color: var(--firehose); }
+
+  .flow-shards {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+    width: 100%;
+    margin: 6px 0;
+  }
+  .shard {
+    background: rgba(0,212,255,0.1);
+    border: 1px solid rgba(0,212,255,0.3);
+    border-radius: 8px;
+    padding: 8px 4px;
+    text-align: center;
+    font-size: 11px;
+    font-family: 'Space Mono', monospace;
+    color: var(--streams);
+  }
+
+  .flow-consumers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    width: 100%;
+  }
+  .consumer {
+    background: rgba(0,212,255,0.05);
+    border: 1px solid rgba(0,212,255,0.2);
+    border-radius: 8px;
+    padding: 8px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--streams);
+  }
+
+  .flow-destinations {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    width: 100%;
+  }
+  .destination {
+    background: rgba(255,107,53,0.08);
+    border: 1px solid rgba(255,107,53,0.25);
+    border-radius: 8px;
+    padding: 8px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--firehose);
+  }
+
+  /* Use cases */
+  .usecases-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 48px;
+  }
+  @media (max-width: 700px) { .usecases-grid { grid-template-columns: 1fr; } }
+
+  .usecase-card {
+    background: var(--surface);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    padding: 24px;
+  }
+  .usecase-title { font-size: 16px; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .streams .usecase-title { color: var(--streams); }
+  .firehose .usecase-title { color: var(--firehose); }
+
+  .scenario {
+    background: var(--surface2);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 12px;
+    border-left: 3px solid;
+  }
+  .streams .scenario { border-color: var(--streams); }
+  .firehose .scenario { border-color: var(--firehose); }
+
+  .scenario-name { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+  .scenario-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+  /* When to choose */
+  .choose-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 40px;
+  }
+  @media (max-width: 700px) { .choose-grid { grid-template-columns: 1fr; } }
+
+  .choose-card {
+    border-radius: 16px;
+    padding: 24px;
+  }
+  .choose-card.streams {
+    background: linear-gradient(135deg, rgba(0,212,255,0.08), rgba(0,212,255,0.02));
+    border: 1px solid rgba(0,212,255,0.2);
+  }
+  .choose-card.firehose {
+    background: linear-gradient(135deg, rgba(255,107,53,0.08), rgba(255,107,53,0.02));
+    border: 1px solid rgba(255,107,53,0.2);
+  }
+  .choose-title { font-size: 16px; font-weight: 800; margin-bottom: 16px; }
+  .streams .choose-title { color: var(--streams); }
+  .firehose .choose-title { color: var(--firehose); }
+
+  .check-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .check-list li { font-size: 13px; line-height: 1.5; display: flex; align-items: flex-start; gap: 8px; }
+  .check-list li::before { content: '✓'; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+  .streams .check-list li::before { color: var(--streams); }
+  .firehose .check-list li::before { color: var(--firehose); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .pulse-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    display: inline-block; margin-right: 6px;
+    animation: pulse 2s ease infinite;
+  }
+  .pulse-dot.s { background: var(--streams); }
+  .pulse-dot.f { background: var(--firehose); }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  .badge-live {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: rgba(0,212,255,0.1);
+    color: var(--streams);
+    border: 1px solid rgba(0,212,255,0.2);
+    margin-left: auto;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header" style="animation: fadeUp 0.5s ease both">
+    <div class="aws-badge">AWS KINESIS</div>
+    <h1><span class="stream-color">Data Streams</span> vs<br><span class="fire-color">Data Firehose</span></h1>
+    <p class="subtitle">Architecture, differences, and when to use each</p>
+  </div>
+
+  <!-- Overview Cards -->
+  <div class="section-title">Overview</div>
+  <div class="cards-grid">
+    <div class="card streams">
+      <div class="card-icon">🌊</div>
+      <div class="card-title">Kinesis Data Streams (KDS)</div>
+      <div class="card-desc">
+        A real-time data streaming service offering low-latency (milliseconds) ingestion with full control over processing. You manage consumers, shards, and retention. Data is stored for up to 365 days.
+      </div>
+      <div class="tag-list">
+        <span class="tag">Real-time</span>
+        <span class="tag">~70ms latency</span>
+        <span class="tag">Manual scaling</span>
+        <span class="tag">Custom consumers</span>
+        <span class="tag">Replay</span>
+      </div>
+    </div>
+    <div class="card firehose">
+      <div class="card-icon">🔥</div>
+      <div class="card-title">Kinesis Data Firehose (KDF)</div>
+      <div class="card-desc">
+        A fully managed ETL service that automatically loads streaming data into destinations like S3, Redshift, OpenSearch, or Splunk. Near real-time with built-in batching, compression, and transformation.
+      </div>
+      <div class="tag-list">
+        <span class="tag">Near real-time</span>
+        <span class="tag">60s+ latency</span>
+        <span class="tag">Auto scaling</span>
+        <span class="tag">Managed ETL</span>
+        <span class="tag">No consumers needed</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Architecture Diagrams -->
+  <div class="section-title">Architecture Diagrams</div>
+  <div class="diagrams-grid">
+
+    <!-- Streams Diagram -->
+    <div class="diagram-card streams">
+      <div class="diagram-title">🌊 Kinesis Data Streams Flow</div>
+      <div class="flow streams">
+        <div class="flow-node">
+          <span class="icon">📱</span>
+          <div class="label">Producers<div class="sub">Apps / IoT / Logs / Clicks</div></div>
+          <span class="badge-live">LIVE</span>
+        </div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node">
+          <span class="icon">🌊</span>
+          <div class="label">Kinesis Data Stream<div class="sub">Ordered, partitioned shards</div></div>
+        </div>
+        <div class="flow-shards">
+          <div class="shard">Shard 1<br/><span style="font-size:9px;color:var(--muted)">1MB/s in</span></div>
+          <div class="shard">Shard 2<br/><span style="font-size:9px;color:var(--muted)">2MB/s out</span></div>
+          <div class="shard">Shard N<br/><span style="font-size:9px;color:var(--muted)">+more</span></div>
+        </div>
+        <div style="font-size:11px;color:var(--muted);text-align:center;padding:4px 0;">
+          ⏱ Retention: 24hrs – 365 days
+        </div>
+        <div class="flow-arrow"></div>
+        <div class="flow-consumers">
+          <div class="consumer">🔧 Lambda<br/>Consumer</div>
+          <div class="consumer">📊 KCL App<br/>Consumer</div>
+          <div class="consumer">🔍 Analytics<br/>Consumer</div>
+          <div class="consumer">🗄️ EC2 / ECS<br/>Consumer</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Firehose Diagram -->
+    <div class="diagram-card firehose">
+      <div class="diagram-title">🔥 Kinesis Data Firehose Flow</div>
+      <div class="flow firehose">
+        <div class="flow-node">
+          <span class="icon">📡</span>
+          <div class="label">Producers<div class="sub">Apps / KDS / CloudWatch / IoT</div></div>
+        </div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node">
+          <span class="icon">🔥</span>
+          <div class="label">Kinesis Data Firehose<div class="sub">Fully managed, serverless</div></div>
+        </div>
+        <div style="background:rgba(255,107,53,0.08);border:1px solid rgba(255,107,53,0.2);border-radius:10px;padding:10px;width:100%;margin:6px 0;text-align:center;">
+          <div style="font-size:11px;color:var(--firehose);font-weight:700;">Built-in Capabilities</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px;">📦 Batching &nbsp;|&nbsp; 🗜️ Compression<br/>🔄 Format Conversion &nbsp;|&nbsp; 🧩 Lambda Transform</div>
+        </div>
+        <div class="flow-arrow"></div>
+        <div style="font-size:11px;color:var(--muted);text-align:center;padding:2px 0;">Destinations</div>
+        <div class="flow-destinations">
+          <div class="destination">🪣 S3</div>
+          <div class="destination">📊 Redshift</div>
+          <div class="destination">🔍 OpenSearch</div>
+          <div class="destination">📈 Splunk</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Comparison Table -->
+  <div class="section-title">Side-by-Side Comparison</div>
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th style="width:25%">Feature</th>
+        <th>🌊 Data Streams</th>
+        <th>🔥 Data Firehose</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Latency</td>
+        <td>~70ms (real-time)</td>
+        <td>60 seconds – 15 minutes (near real-time)</td>
+      </tr>
+      <tr>
+        <td>Management</td>
+        <td>Manual — you manage shards, consumers, scaling</td>
+        <td>Fully managed — zero infrastructure to manage</td>
+      </tr>
+      <tr>
+        <td>Scaling</td>
+        <td>Manual shard splitting/merging, or on-demand mode</td>
+        <td>Automatic — scales elastically with load</td>
+      </tr>
+      <tr>
+        <td>Data Retention</td>
+        <td>24 hours (default) up to 365 days. Replay supported.</td>
+        <td>No retention. Data flows directly to destination.</td>
+      </tr>
+      <tr>
+        <td>Consumers</td>
+        <td>Multiple consumers (Lambda, KCL, Spark, Flink)</td>
+        <td>Single destination per stream (S3, Redshift, etc.)</td>
+      </tr>
+      <tr>
+        <td>Data Transform</td>
+        <td>Done in the consumer application</td>
+        <td>Built-in via Lambda, format conversion (JSON → Parquet)</td>
+      </tr>
+      <tr>
+        <td>Ordering</td>
+        <td>Per-shard strict ordering</td>
+        <td>Best-effort ordering</td>
+      </tr>
+      <tr>
+        <td>Replay</td>
+        <td>✅ Yes — re-read from any offset</td>
+        <td>❌ No replay capability</td>
+      </tr>
+      <tr>
+        <td>Pricing</td>
+        <td>Pay per shard-hour + data volume</td>
+        <td>Pay per data ingested (no shard cost)</td>
+      </tr>
+      <tr>
+        <td>Best For</td>
+        <td>Complex real-time processing, event sourcing, gaming</td>
+        <td>Log archiving, ETL to data lake/warehouse</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Use Cases -->
+  <div class="section-title">Real-World Use Cases</div>
+  <div class="usecases-grid">
+    <div class="usecase-card streams">
+      <div class="usecase-title">🌊 Kinesis Data Streams Use Cases</div>
+      <div class="scenario streams">
+        <div class="scenario-name">🎮 Real-time Gaming Leaderboard</div>
+        <div class="scenario-desc">Player events stream into KDS with &lt;100ms latency. Multiple consumers update leaderboards, detect cheating patterns, and trigger notifications simultaneously from the same stream.</div>
+      </div>
+      <div class="scenario streams">
+        <div class="scenario-name">🛡️ Fraud Detection</div>
+        <div class="scenario-desc">Transaction events flow into KDS. A Lambda consumer applies ML models in real-time. Another consumer logs to audit systems. Both read the same stream independently.</div>
+      </div>
+      <div class="scenario streams">
+        <div class="scenario-name">📊 Live Dashboard Analytics</div>
+        <div class="scenario-desc">Clickstream data streams in. Flink/Spark consumers compute rolling aggregates for live dashboards — sub-second updates on active user counts and funnel metrics.</div>
+      </div>
+    </div>
+    <div class="usecase-card firehose">
+      <div class="usecase-title">🔥 Kinesis Data Firehose Use Cases</div>
+      <div class="scenario firehose">
+        <div class="scenario-name">🪣 Data Lake Ingestion (S3)</div>
+        <div class="scenario-desc">Application logs stream into Firehose, which batches, compresses (GZIP), converts to Parquet format, and delivers to S3 partitioned by date — zero code needed.</div>
+      </div>
+      <div class="scenario firehose">
+        <div class="scenario-name">📦 Log Archiving & Compliance</div>
+        <div class="scenario-desc">CloudWatch Logs or VPC Flow Logs are piped to Firehose and delivered to S3 for long-term storage and compliance. Cost-efficient at high volume with built-in compression.</div>
+      </div>
+      <div class="scenario firehose">
+        <div class="scenario-name">🔍 Search Indexing (OpenSearch)</div>
+        <div class="scenario-desc">Server access logs flow through Firehose directly into OpenSearch Service. No consumer management — Firehose handles retries, buffering, and index rotation automatically.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- When to Choose -->
+  <div class="section-title">When to Choose</div>
+  <div class="choose-grid">
+    <div class="choose-card streams">
+      <div class="choose-title">🌊 Choose Data Streams when...</div>
+      <ul class="check-list streams">
+        <li>You need sub-second, real-time processing</li>
+        <li>Multiple independent consumers need the same data</li>
+        <li>You need to replay or reprocess historical data</li>
+        <li>Building complex stateful stream processing (Flink, Spark)</li>
+        <li>Strict message ordering per pa
