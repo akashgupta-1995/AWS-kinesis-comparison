@@ -1,2 +1,2 @@
 # AWS-kinesis-comparison
-HTML Page Created to host the comparison between AWS Kinese Services
+Static HTML Website deployed via Github Actions to see the comparison between AWS Kinese Services - AWS KDS and AWS KDF.
