@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI for Senior Engineers</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --card: #16161f;
+    --border: #2a2a3a;
+    --accent: #00f5a0;
+    --accent2: #00b4d8;
+    --accent3: #f72585;
+    --text: #e8e8f0;
+    --muted: #6b6b8a;
+    --heading: #ffffff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.8;
+    overflow-x: hidden;
+  }
+
+  /* Noise overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  /* HEADER */
+  header {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 4rem 6vw;
+    overflow: hidden;
+  }
+
+  header::before {
+    content: '';
+    position: absolute;
+    top: -30%;
+    right: -10%;
+    width: 70vw;
+    height: 70vw;
+    background: radial-gradient(ellipse, rgba(0,245,160,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -20%;
+    left: -5%;
+    width: 50vw;
+    height: 50vw;
+    background: radial-gradient(ellipse, rgba(247,37,133,0.05) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .header-label {
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 0.2s;
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(3rem, 8vw, 7rem);
+    font-weight: 800;
+    line-height: 1;
+    color: var(--heading);
+    letter-spacing: -0.03em;
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.4s;
+  }
+
+  h1 span {
+    color: var(--accent);
+    display: block;
+  }
+
+  .header-sub {
+    font-size: 15px;
+    color: var(--muted);
+    max-width: 560px;
+    line-height: 2;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.6s;
+  }
+
+  .toc {
+    margin-top: 4rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.8s;
+  }
+
+  .toc a {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    text-decoration: none;
+    padding: 0.5rem 1.2rem;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    transition: all 0.2s;
+    border-radius: 2px;
+  }
+
+  .toc a:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* MAIN LAYOUT */
+  main { padding: 0 6vw; }
+
+  /* SECTION */
+  section {
+    padding: 6rem 0;
+    border-top: 1px solid var(--border);
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  section.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .section-num {
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--muted);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+  }
+
+  h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    font-weight: 800;
+    color: var(--heading);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin-bottom: 2.5rem;
+  }
+
+  h2 .accent { color: var(--accent); }
+
+  h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--heading);
+    margin-bottom: 0.75rem;
+    margin-top: 2rem;
+  }
+
+  p { margin-bottom: 1.2rem; color: var(--text); }
+
+  .lead {
+    font-size: 16px;
+    color: var(--text);
+    max-width: 720px;
+    line-height: 2;
+    margin-bottom: 3rem;
+  }
+
+  /* CARDS GRID */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-bottom: 3rem;
+  }
+
+  .card {
+    background: var(--card);
+    padding: 2rem;
+    transition: background 0.2s;
+    position: relative;
+  }
+
+  .card:hover { background: #1c1c28; }
+
+  .card-icon {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .card h4 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--heading);
+    margin-bottom: 0.5rem;
+  }
+
+  .card p {
+    font-size: 13px;
+    color: var(--muted);
+    margin: 0;
+    line-height: 1.7;
+  }
+
+  .card .tag {
+    position: absolute;
+    top: 1.2rem;
+    right: 1.2rem;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    padding: 2px 8px;
+    background: rgba(0,245,160,0.08);
+    color: var(--accent);
+    border-radius: 2px;
+  }
+
+  /* CODE BLOCKS */
+  pre {
+    background: #0d0d15;
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    padding: 1.5rem;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+    font-size: 13px;
+    line-height: 1.7;
+    border-radius: 0 4px 4px 0;
+  }
+
+  code { color: var(--accent2); font-family: 'JetBrains Mono', monospace; }
+  pre code { color: var(--text); }
+  .kw { color: #c792ea; }
+  .fn { color: #82aaff; }
+  .str { color: #c3e88d; }
+  .cm { color: #546e7a; }
+  .num { color: #f78c6c; }
+
+  /* COMPARISON TABLE */
+  .table-wrap {
+    overflow-x: auto;
+    margin: 2rem 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  th {
+    background: var(--card);
+    color: var(--muted);
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-size: 11px;
+    padding: 1rem 1.2rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  td {
+    padding: 1rem 1.2rem;
+    border-bottom: 1px solid #1c1c28;
+    vertical-align: top;
+    line-height: 1.6;
+  }
+
+  tr:hover td { background: var(--card); }
+
+  td:first-child {
+    color: var(--accent);
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  /* CALLOUT */
+  .callout {
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent3);
+    background: rgba(247,37,133,0.04);
+    padding: 1.5rem 2rem;
+    margin: 2rem 0;
+    font-size: 13px;
+    line-height: 1.8;
+  }
+
+  .callout strong { color: var(--accent3); }
+
+  .callout-info {
+    border-left-color: var(--accent2);
+    background: rgba(0,180,216,0.04);
+  }
+
+  .callout-info strong { color: var(--accent2); }
+
+  .callout-success {
+    border-left-color: var(--accent);
+    background: rgba(0,245,160,0.04);
+  }
+
+  .callout-success strong { color: var(--accent); }
+
+  /* PILL LIST */
+  .pill-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1.5rem 0;
+  }
+
+  .pill {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 0.4rem 0.9rem;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    transition: all 0.2s;
+    cursor: default;
+  }
+
+  .pill:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .pill.accent { border-color: var(--accent); color: var(--accent); }
+  .pill.accent2 { border-color: var(--accent2); color: var(--accent2); }
+  .pill.accent3 { border-color: var(--accent3); color: var(--accent3); }
+
+  /* TIMELINE */
+  .timeline {
+    position: relative;
+    padding-left: 2rem;
+    margin: 2rem 0;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 8px;
+    bottom: 8px;
+    width: 1px;
+    background: var(--border);
+  }
+
+  .timeline-item {
+    position: relative;
+    margin-bottom: 2rem;
+  }
+
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -2rem;
+    top: 8px;
+    width: 8px;
+    height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    margin-left: -3px;
+  }
+
+  .timeline-year {
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    margin-bottom: 0.25rem;
+  }
+
+  .timeline-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    color: var(--heading);
+    margin-bottom: 0.25rem;
+  }
+
+  .timeline-desc { font-size: 13px; color: var(--muted); }
+
+  /* TWO-COL */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  @media (max-width: 700px) {
+    .two-col { grid-template-columns: 1fr; }
+    header { padding: 4rem 1.5rem; }
+    main { padding: 0 1.5rem; }
+  }
+
+  /* METRIC BAR */
+  .metric { margin-bottom: 1.2rem; }
+  .metric-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 0.4rem;
+  }
+  .metric-label span:last-child { color: var(--text); }
+  .metric-bar {
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .metric-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 1s ease;
+    width: 0;
+  }
+  .metric-fill.animated { width: var(--w); }
+  .metric-fill.blue { background: var(--accent2); }
+  .metric-fill.pink { background: var(--accent3); }
+
+  /* FOOTER */
+  footer {
+    padding: 4rem 6vw;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: var(--muted);
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  footer span { color: var(--accent); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-label">// For engineers with 8+ years experience</div>
+  <h1>
+    Everything you need to know about
+    <span>AI.</span>
+  </h1>
+  <p class="header-sub">A dense, technical reference covering the concepts, architectures, tools, and practical realities of modern artificial intelligence — written for engineers who don't need hand-holding.</p>
+  <nav class="toc">
+    <a href="#foundations">01 Foundations</a>
+    <a href="#architectures">02 Architectures</a>
+    <a href="#training">03 Training</a>
+    <a href="#llms">04 LLMs</a>
+    <a href="#evaluation">05 Evaluation</a>
+    <a href="#inference">06 Inference & Serving</a>
+    <a href="#engineering">07 AI Engineering</a>
+    <a href="#production">08 Production</a>
+    <a href="#safety">09 Safety & Ethics</a>
+    <a href="#landscape">10 Landscape</a>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ==================== 01 FOUNDATIONS ==================== -->
+  <section id="foundations">
+    <div class="section-num">// 01</div>
+    <h2>Foundations: <span class="accent">The taxonomy</span></h2>
+    <p class="lead">AI, ML, and Deep Learning are nested subsets — not synonyms. Understanding the hierarchy prevents embarrassing conflation and helps you reason about which tools actually apply to your problem.</p>
+
+    <div class="grid">
+      <div class="card">
+        <span class="card-icon">🌐</span>
+        <h4>Artificial Intelligence</h4>
+        <p>Any technique making machines simulate intelligent behavior. Includes rule-based systems, expert systems, search algorithms, and everything below. Dates to the 1950s. Broad enough to be nearly meaningless without qualification.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">📈</span>
+        <h4>Machine Learning</h4>
+        <p>Systems that learn patterns from data without explicit programming. You define the optimization objective; the algorithm finds parameters. Covers classical methods: linear models, SVMs, decision trees, ensemble methods.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">🧠</span>
+        <h4>Deep Learning</h4>
+        <p>ML via multi-layered neural networks. Learns hierarchical representations automatically. Requires large data and GPU compute. Has largely supplanted classical ML for perception tasks (vision, speech, NLP).</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">🏛️</span>
+        <h4>Foundation Models</h4>
+        <p>Large-scale models pretrained on broad data, adapted via fine-tuning or prompting. The paradigm shift of the 2020s: train once at enormous scale, deploy cheaply across hundreds of tasks.</p>
+      </div>
+    </div>
+
+    <h3>Classical ML: Still relevant</h3>
+    <p>Don't reflexively reach for a neural network. For tabular data with limited samples, gradient-boosted trees (XGBoost, LightGBM, CatBoost) routinely outperform deep learning and train in seconds. Always benchmark a simple baseline.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Problem Type</th><th>Classical Approach</th><th>Deep Learning Approach</th><th>When to prefer DL</th></tr></thead>
+        <tbody>
+          <tr><td>Tabular classification</td><td>XGBoost, LightGBM</td><td>TabNet, FT-Transformer</td><td>Complex feature interactions, >1M rows</td></tr>
+          <tr><td>Time series</td><td>ARIMA, Prophet</td><td>N-BEATS, Temporal Fusion Transformer</td><td>Multiple related series, long-range patterns</td></tr>
+          <tr><td>Text classification</td><td>TF-IDF + logistic regression</td><td>Fine-tuned BERT/RoBERTa</td><td>Nearly always; DL dominates NLP</td></tr>
+          <tr><td>Image recognition</td><td>HOG + SVM</td><td>CNNs, ViTs</td><td>Always; classical is obsolete here</td></tr>
+          <tr><td>Anomaly detection</td><td>Isolation Forest, LOF</td><td>Autoencoders, normalizing flows</td><td>When structure is complex or image-based</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-info">
+      <strong>// Engineer's note:</strong> The most common ML mistake is choosing architecture before understanding data. Data quality, quantity, and distribution dominates model choice 80% of the time. Garbage in, garbage out — regardless of model complexity.
+    </div>
+  </section>
+
+  <!-- ==================== 02 ARCHITECTURES ==================== -->
+  <section id="architectures">
+    <div class="section-num">// 02</div>
+    <h2>Core <span class="accent">Architectures</span></h2>
+    <p class="lead">Neural network architectures are the inductive biases we bake into models. Each encodes assumptions about data structure. Know when each applies.</p>
+
+    <div class="grid">
+      <div class="card">
+        <span class="card-icon">🔁</span>
+        <h4>Transformer</h4>
+        <div class="tag">dominant</div>
+        <p>Self-attention over sequences. O(n²) memory in attention but parallelizable. The backbone of GPT, BERT, ViTs, Whisper, and almost everything modern. Introduced in "Attention Is All You Need" (2017).</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">🖼️</span>
+        <h4>CNN</h4>
+        <p>Convolutional layers with weight sharing encode translation invariance. Still viable for edge inference and real-time vision. ResNet, EfficientNet for classification; U-Net for segmentation.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">🔀</span>
+        <h4>RNN / LSTM / GRU</h4>
+        <p>Sequential processing with hidden state. Largely replaced by Transformers for language, but still used in embedded/real-time systems due to O(1) inference per step. Useful where sequence length is dynamic or memory is constrained.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">↔️</span>
+        <h4>Diffusion Models</h4>
+        <p>Learn to denoise Gaussian noise iteratively. State-of-the-art for image, audio, and video generation. Stable Diffusion, DALL·E 3, Sora. Slower inference than GANs but more stable training and better coverage of data distribution.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">🎲</span>
+        <h4>GANs</h4>
+        <p>Generator vs discriminator adversarial training. Training instability (mode collapse, vanishing gradients) largely supplanted by diffusion. Still relevant for fast inference and certain domain adaptation tasks.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">🧩</span>
+        <h4>Graph Neural Networks</h4>
+        <p>Message passing on graph structure. Essential for molecular property prediction, recommendation systems (social graphs), and fraud detection. PyTorch Geometric, DGL are the main libraries.</p>
+      </div>
+    </div>
+
+    <h3>The Transformer: What you actually need to understand</h3>
+
+    <pre><code><span class="cm"># Scaled Dot-Product Attention — the core operation</span>
+<span class="cm"># Q, K, V ∈ ℝ^(seq_len × d_model)</span>
+
+<span class="kw">def</span> <span class="fn">attention</span>(Q, K, V, mask=<span class="kw">None</span>):
+    d_k = Q.shape[<span class="num">-1</span>]
+    scores = Q @ K.transpose(<span class="num">-2</span>, <span class="num">-1</span>) / d_k**<span class="num">0.5</span>   <span class="cm"># scale</span>
+    <span class="kw">if</span> mask <span class="kw">is not</span> <span class="kw">None</span>:
+        scores = scores.masked_fill(mask == <span class="num">0</span>, <span class="num">-1e9</span>)
+    weights = <span class="fn">softmax</span>(scores, dim=<span class="num">-1</span>)               <span class="cm"># attend</span>
+    <span class="kw">return</span> weights @ V                               <span class="cm"># aggregate</span>
+
+<span class="cm"># Multi-head: run h attention heads in parallel</span>
+<span class="cm"># then concat → linear projection</span>
+<span class="cm"># Each head can specialize on different relationship types</span></code></pre>
+
+    <div class="two-col">
+      <div>
+        <h3>Positional encodings</h3>
+        <p>Transformers are permutation-invariant by design — you must inject position information. Options: fixed sinusoidal (original), learned absolute, relative (T5), rotary (RoPE — used by LLaMA, GPT-NeoX), ALiBi (linear bias). RoPE has become the de facto standard for LLMs.</p>
+      </div>
+      <div>
+        <h3>Attention variants</h3>
+        <p>Full attention is O(n²) in sequence length. Efficient alternatives: Flash Attention (IO-aware tiling, same result, 2–4× faster), Multi-Query Attention (shared KV heads), Grouped Query Attention (GQA, middle ground — used in LLaMA 3, Mistral). Sparse attention (Longformer, BigBird) for very long sequences.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 03 TRAINING ==================== -->
+  <section id="training">
+    <div class="section-num">// 03</div>
+    <h2>Training <span class="accent">mechanics</span></h2>
+    <p class="lead">Training is optimization under constraints. Every practitioner choice — loss function, optimizer, learning rate schedule, regularization — has a principled reason. Know them.</p>
+
+    <h3>Loss functions</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Task</th><th>Loss</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>Binary classification</td><td>Binary Cross Entropy</td><td>Use with sigmoid; numerically stable via BCEWithLogitsLoss</td></tr>
+          <tr><td>Multi-class</td><td>Cross Entropy</td><td>Combines log-softmax + NLL. Label smoothing improves calibration</td></tr>
+          <tr><td>Regression</td><td>MSE / MAE / Huber</td><td>MSE is sensitive to outliers; Huber is robust; MAE is non-smooth</td></tr>
+          <tr><td>Autoregressive LM</td><td>Cross Entropy (next token)</td><td>Predicting next token from context; scales with vocabulary size</td></tr>
+          <tr><td>Contrastive learning</td><td>InfoNCE / NT-Xent</td><td>Pull similar pairs together, push negatives apart. Key: negative sampling quality</td></tr>
+          <tr><td>Generative / VAE</td><td>ELBO (reconstruction + KL)</td><td>β-VAE scales KL term to disentangle representations</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Optimizers: the practical hierarchy</h3>
+    <p>Adam (Kingma & Ba, 2014) remains the default. AdamW adds decoupled weight decay — almost always preferred. For very large models, use Adafactor (memory-efficient) or SOAP/Muon (emerging). SGD with momentum still wins on CNNs for image classification with careful tuning.</p>
+
+    <pre><code><span class="cm"># AdamW — the standard starting point</span>
+<span class="cm"># key hyperparameters: lr, betas, weight_decay, eps</span>
+optimizer = torch.optim.<span class="fn">AdamW</span>(
+    model.parameters(),
+    lr=<span class="num">3e-4</span>,          <span class="cm"># Karpathy's constant</span>
+    betas=(<span class="num">0.9</span>, <span class="num">0.95</span>), <span class="cm"># β2=0.95 for LLMs, 0.999 for smaller models</span>
+    weight_decay=<span class="num">0.1</span>,  <span class="cm"># L2 on weights, not biases/norms</span>
+    eps=<span class="num">1e-8</span>
+)
+
+<span class="cm"># Learning rate schedule: cosine decay with warmup</span>
+<span class="cm"># warmup prevents early instability; cosine avoids hard cutoff</span>
+scheduler = <span class="fn">get_cosine_schedule_with_warmup</span>(
+    optimizer, num_warmup_steps=<span class="num">100</span>, num_training_steps=<span class="num">10000</span>
+)</code></pre>
+
+    <h3>Training techniques every engineer should know</h3>
+    <div class="grid">
+      <div class="card">
+        <h4>Gradient clipping</h4>
+        <p>Clip gradient norm to [0.5, 1.0] for LLMs. Prevents gradient explosion in deep models. Essential for RNNs and Transformers on long sequences.</p>
+      </div>
+      <div class="card">
+        <h4>Mixed precision (AMP)</h4>
+        <p>FP16/BF16 forward pass, FP32 master weights. BF16 preferred (wider exponent range, no gradient scaling needed). 2× memory savings, 2–3× throughput on modern GPUs.</p>
+      </div>
+      <div class="card">
+        <h4>Gradient accumulation</h4>
+        <p>Simulate large batches on memory-constrained hardware. Accumulate gradients over N steps before optimizer.step(). Common when target batch size exceeds available GPU memory.</p>
+      </div>
+      <div class="card">
+        <h4>Batch normalization vs Layer norm</h4>
+        <p>BatchNorm: normalize over batch dimension. Problematic for variable-length sequences and small batches. LayerNorm: normalize over feature dimension. Standard in Transformers. RMSNorm (no mean centering) is faster; used in LLaMA.</p>
+      </div>
+      <div class="card">
+        <h4>Dropout & regularization</h4>
+        <p>Dropout rate 0.1–0.3 for large models. Often reduced/removed for very large LLMs (they self-regularize via scale). Weight decay (AdamW) is the primary regularizer for Transformers.</p>
+      </div>
+      <div class="card">
+        <h4>Data augmentation</h4>
+        <p>Vision: random crop, flip, color jitter, Mixup, CutMix, RandAugment. NLP: back-translation, synonym replacement, token masking. Augmentation is often worth more than architectural changes.</p>
+      </div>
+    </div>
+
+    <h3>Distributed training</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Strategy</th><th>What's distributed</th><th>When to use</th></tr></thead>
+        <tbody>
+          <tr><td>Data Parallel (DDP)</td><td>Same model, different data shards</td><td>Model fits on single GPU; standard multi-GPU setup</td></tr>
+          <tr><td>Model Parallel</td><td>Different layers on different GPUs</td><td>Model too large for single GPU</td></tr>
+          <tr><td>Tensor Parallel</td><td>Individual weight matrices split across GPUs</td><td>Very large matrices; Megatron-LM style</td></tr>
+          <tr><td>Pipeline Parallel</td><td>Stages of model across GPUs</td><td>Very deep models; introduces pipeline bubbles</td></tr>
+          <tr><td>ZeRO (DeepSpeed)</td><td>Optimizer states, gradients, params sharded</td><td>LLM training; effectively eliminates redundant memory</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ==================== 04 LLMs ==================== -->
+  <section id="llms">
+    <div class="section-num">// 04</div>
+    <h2>Large Language <span class="accent">Models</span></h2>
+    <p class="lead">LLMs are autoregressive models trained to predict the next token. That simple objective, at sufficient scale, produces emergent capabilities that weren't directly trained for. Here's what you need to understand about how they work and how to work with them.</p>
+
+    <div class="two-col">
+      <div>
+        <h3>Pretraining</h3>
+        <p>Next-token prediction on internet-scale text. The model learns grammar, facts, reasoning patterns, code, and world knowledge as a byproduct of this single objective. Scaling laws (Hoffman et al., Chinchilla) define the optimal compute-data tradeoff: ~20 tokens per parameter for a compute-optimal run.</p>
+
+        <h3>Supervised Fine-Tuning (SFT)</h3>
+        <p>After pretraining, the model is fined-tuned on demonstration data: input-output pairs showing desired behavior. This transitions the model from a next-token predictor to an instruction follower. Quality of demonstrations matters more than quantity — a few thousand high-quality examples beats millions of noisy ones.</p>
+
+        <h3>RLHF & Alignment</h3>
+        <p>Reinforcement Learning from Human Feedback: humans rank outputs → train a reward model → use PPO (or GRPO, DPO) to optimize the LLM toward higher-reward outputs. DPO (Direct Preference Optimization) eliminates the separate reward model, directly optimizing from preference pairs — simpler and increasingly preferred.</p>
+      </div>
+      <div>
+        <h3>Tokenization</h3>
+        <p>Text is split into tokens (subword units) using BPE (Byte-Pair Encoding) or SentencePiece. Vocabulary typically 32k–128k tokens. Token count ≠ word count; roughly 1 token per 0.75 words for English. Code is more token-dense. Token boundaries affect model behavior — "tokenization heist" problems are real.</p>
+
+        <h3>Context window</h3>
+        <p>Fixed at training time. RoPE + long-context fine-tuning now allows 128k–1M+ token contexts. Retrieval-Augmented Generation (RAG) is often better than stuffing context — latency, cost, and the "lost in the middle" problem where models struggle with information buried in long contexts.</p>
+
+        <h3>Emergent capabilities</h3>
+        <p>Abilities that appear sharply at certain scales: chain-of-thought reasoning, in-context learning, instruction following, code generation. Debated whether these are truly emergent or artifacts of evaluation metrics. Practically: GPT-3 class models (~175B) show qualitatively different behavior than GPT-2 class.</p>
+      </div>
+    </div>
+
+    <h3>Prompting patterns that actually work</h3>
+    <div class="grid">
+      <div class="card">
+        <h4>Chain of Thought (CoT)</h4>
+        <p>"Let's think step by step." Dramatically improves multi-step reasoning by forcing intermediate computation in the token stream. Works because generation happens token-by-token — more tokens = more compute.</p>
+      </div>
+      <div class="card">
+        <h4>Few-shot examples</h4>
+        <p>Include 3–8 examples of input→output in the prompt. Dramatically outperforms zero-shot for structured tasks. Format consistency matters more than example quality.</p>
+      </div>
+      <div class="card">
+        <h4>System prompts</h4>
+        <p>Persistent instructions that frame every response. Use for: persona, output format constraints, domain grounding, safety guardrails, tool definitions. Models attend to system prompts differently than user turns.</p>
+      </div>
+      <div class="card">
+        <h4>Structured output</h4>
+        <p>Request JSON, XML, or markdown. Use constrained decoding (Outlines, Instructor, Guidance) to guarantee valid output format. Eliminates brittle regex parsing of LLM responses.</p>
+      </div>
+      <div class="card">
+        <h4>Tool / Function calling</h4>
+        <p>Define tools as JSON schemas. Model emits structured tool call → application executes → result returned to model. Enables LLMs to interact with APIs, databases, code interpreters. Backbone of agentic systems.</p>
+      </div>
+      <div class="card">
+        <h4>RAG (Retrieval-Augmented Generation)</h4>
+        <p>Retrieve relevant documents from a vector store → inject into context → generate grounded response. Reduces hallucination for factual queries, enables knowledge cutoff workarounds, citable sources.</p>
+      </div>
+    </div>
+
+    <h3>Fine-tuning approaches</h3>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Method</th><th>Parameters updated</th><th>Cost</th><th>Best for</th></tr></thead>
+        <tbody>
+          <tr><td>Full fine-tuning</td><td>All</td><td>High</td><td>Significant domain shift; have lots of data</td></tr>
+          <tr><td>LoRA</td><td>Low-rank adapters (~1% of params)</td><td>Low</td><td>Style/behavior adaptation, most fine-tuning use cases</td></tr>
+          <tr><td>QLoRA</td><td>LoRA on quantized base model</td><td>Very low</td><td>Single GPU fine-tuning of large models</td></tr>
+          <tr><td>Prompt tuning</td><td>Soft prompt embeddings only</td><td>Minimal</td><td>When base model must be frozen</td></tr>
+          <tr><td>PEFT (general)</td><td>Various adapter methods</td><td>Low</td><td>HuggingFace ecosystem; multiple adapters per base</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <pre><code><span class="cm"># QLoRA fine-tuning setup (practical minimum)</span>
+<span class="kw">from</span> transformers <span class="kw">import</span> AutoModelForCausalLM, BitsAndBytesConfig
+<span class="kw">from</span> peft <span class="kw">import</span> get_peft_model, LoraConfig
+
+bnb_config = <span class="fn">BitsAndBytesConfig</span>(
+    load_in_4bit=<span class="kw">True</span>,
+    bnb_4bit_quant_type=<span class="str">"nf4"</span>,
+    bnb_4bit_compute_dtype=torch.bfloat16,
+)
+model = <span class="fn">AutoModelForCausalLM.from_pretrained</span>(
+    <span class="str">"meta-llama/Llama-3-8B"</span>, quantization_config=bnb_config
+)
+lora_config = <span class="fn">LoraConfig</span>(r=<span class="num">16</span>, lora_alpha=<span class="num">32</span>, target_modules=<span class="str">"all-linear"</span>)
+model = <span class="fn">get_peft_model</span>(model, lora_config)
+<span class="cm"># Trains ~0.5% of parameters with 4-bit base model</span></code></pre>
+  </section>
+
+  <!-- ==================== 05 EVALUATION ==================== -->
+  <section id="evaluation">
+    <div class="section-num">// 05</div>
+    <h2>Evaluation <span class="accent">& Metrics</span></h2>
+    <p class="lead">Most AI failures in production are evaluation failures. If you can't measure it, you can't improve it — and wrong metrics lead to confidently wrong models.</p>
+
+    <div class="two-col">
+      <div>
+        <h3>Classification metrics</h3>
+        <div class="metric">
+          <div class="metric-label"><span>Accuracy</span><span>often misleading on imbalanced data</span></div>
+        </div>
+        <div class="metric">
+          <div class="metric-label"><span>F1 Score</span><span>harmonic mean of precision & recall</span></div>
+        </div>
+        <div class="metric">
+          <div class="metric-label"><span>ROC-AUC</span><span>threshold-independent, good for ranking</span></div>
+        </div>
+        <div class="metric">
+          <div class="metric-label"><span>PR-AUC</span><span>better for imbalanced classes</span></div>
+        </div>
+        <p>Use confusion matrices. Track per-class performance separately. Aggregate metrics hide pathological failures on minority classes.</p>
+      </div>
+      <div>
+        <h3>LLM-specific evaluation</h3>
+        <div class="metric">
+          <div class="metric-label"><span>Perplexity</span><span>intrinsic; lower = better compression</span></div>
+        </div>
+        <div class="metric">
+          <div class="metric-label"><span>BLEU / ROUGE</span><span>n-gram overlap; poor proxy for quality</span></div>
+        </div>
+        <div class="metric">
+          <div class="metric-label"><span>Human eval (win rate)</span><span>gold standard but expensive</span></div>
+        </div>
+        <div class="metric">
+          <div class="metric-label"><span>LLM-as-judge</span><span>scalable; must calibrate for bias</span></div>
+        </div>
+        <p>Benchmarks: MMLU (knowledge breadth), HumanEval (code), GSM8K (math), HELM, BIG-Bench. All subject to contamination — treat with appropriate skepticism.</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>// Goodhart's Law applies to ML:</strong> When a measure becomes a target, it ceases to be a good measure. Models trained against fixed benchmarks overfit those benchmarks. RLHF-trained models learn to appear helpful rather than be helpful. Always evaluate on held-out, diverse, real-world task distributions.
+    </div>
+
+    <h3>Evaluation anti-patterns</h3>
+    <div class="grid">
+      <div class="card">
+        <h4>Data leakage</h4>
+        <p>Test data influences training. Sources: target encoding computed on full dataset, time series splits that look into the future, augmentation applied before splitting. Use strict temporal or group-based splits.</p>
+      </div>
+      <div class="card">
+        <h4>Distribution shift</h4>
+        <p>Model performs well in eval, fails in production. Train/test split from same distribution but production differs. Measure statistical distance between distributions (PSI, KL divergence). Monitor input distributions in production.</p>
+      </div>
+      <div class="card">
+        <h4>Overfitting to eval set</h4>
+        <p>Iterating on test set performance is optimizing for test set, not generalization. Use a held-out final test set touched exactly once. Never make modeling decisions based on test performance.</p>
+      </div>
+      <div class="card">
+        <h4>Wrong metric</h4>
+        <p>Optimizing accuracy when precision matters (false positives are expensive). Optimizing BLEU when human preference is the goal. Always tie metrics to business/user outcomes.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 06 INFERENCE ==================== -->
+  <section id="inference">
+    <div class="section-num">// 06</div>
+    <h2>Inference <span class="accent">& Serving</span></h2>
+    <p class="lead">Training is a one-time cost. Inference is your recurring cost. Optimizing for throughput, latency, and cost at serving time is where most production ML engineering effort goes.</p>
+
+    <h3>Quantization</h3>
+    <p>Reduce numerical precision to decrease memory and compute. Post-Training Quantization (PTQ): INT8 with minimal quality loss; INT4 with moderate loss; use GPTQ or AWQ for LLMs. Quantization-Aware Training (QAT): simulates quantization during training for better accuracy. Key insight: weights can often be quantized more aggressively than activations.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Precision</th><th>Memory (vs FP32)</th><th>Quality impact</th><th>Common use</th></tr></thead>
+        <tbody>
+          <tr><td>FP32</td><td>1×</td><td>Baseline</td><td>Training master weights</td></tr>
+          <tr><td>BF16</td><td>0.5×</td><td>Negligible</td><td>Training & inference on modern hardware</td></tr>
+          <tr><td>INT8</td><td>0.25×</td><td>Minimal (~0.5% on most benchmarks)</td><td>Production LLM serving</td></tr>
+          <tr><td>INT4</td><td>0.125×</td><td>Moderate (1–3%)</td><td>Edge/consumer devices, extreme memory constraints</td></tr>
+          <tr><td>2-bit</td><td>0.0625×</td><td>Significant</td><td>Research; rarely production</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>LLM-specific serving optimizations</h3>
+    <div class="grid">
+      <div class="card">
+        <h4>KV Cache</h4>
+        <p>Cache Key/Value tensors from previous tokens to avoid recomputation. Enables O(1) per-step cost vs O(n) without caching. Memory cost scales with batch_size × context_length × layers × d_model.</p>
+      </div>
+      <div class="card">
+        <h4>Continuous batching</h4>
+        <p>Don't wait for all requests to finish before starting new ones. Interleave generation steps across requests of different lengths. 5–10× throughput improvement over naive batching. vLLM, TGI implement this.</p>
+      </div>
+      <div class="card">
+        <h4>Speculative decoding</h4>
+        <p>Use a small "draft" model to propose multiple tokens; large model verifies in parallel. Reduces wall-clock latency for autoregressive generation without changing output distribution. Requires draft model with similar vocabulary.</p>
+      </div>
+      <div class="card">
+        <h4>PagedAttention</h4>
+        <p>vLLM's innovation: manage KV cache like OS virtual memory. Eliminates fragmentation, enables 20× memory efficiency improvement over contiguous KV allocation. Industry standard for production LLM serving.</p>
+      </div>
+    </div>
+
+    <h3>Serving frameworks</h3>
+    <div class="pill-list">
+      <span class="pill accent">vLLM</span>
+      <span class="pill">TGI (HuggingFace)</span>
+      <span class="pill">Triton Inference Server</span>
+      <span class="pill">TorchServe</span>
+      <span class="pill accent2">llama.cpp</span>
+      <span class="pill">Ollama</span>
+      <span class="pill">TensorRT-LLM</span>
+      <span class="pill">Ray Serve</span>
+    </div>
+  </section>
+
+  <!-- ==================== 07 AI ENGINEERING ==================== -->
+  <section id="engineering">
+    <div class="section-num">// 07</div>
+    <h2>AI Engineering <span class="accent">in practice</span></h2>
+    <p class="lead">The emerging role of "AI engineer" bridges software engineering and ML. You may not train models, but you compose them into systems that deliver real value.</p>
+
+    <h3>The AI Engineering Stack</h3>
+
+    <div class="grid">
+      <div class="card">
+        <span class="card-icon">📦</span>
+        <h4>Model Providers</h4>
+        <p>OpenAI, Anthropic, Google (Gemini), Mistral, Cohere for APIs. HuggingFace Hub for open-weight models (LLaMA, Mistral, Qwen, Gemma). Always abstract behind an interface — model landscape changes quarterly.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">🔗</span>
+        <h4>Orchestration</h4>
+        <p>LangChain (mature, complex), LlamaIndex (retrieval-focused), LangGraph (stateful agents), Instructor (structured outputs), DSPy (compile prompts, not write them). For simple use cases: raw API calls + your own abstractions often beat these frameworks.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">🗃️</span>
+        <h4>Vector Databases</h4>
+        <p>Pinecone, Weaviate, Qdrant, Chroma (local), pgvector (Postgres extension). For RAG pipelines. Consider: pgvector + existing Postgres infra often sufficient for <1M vectors. Only add dedicated vector DB when scale demands it.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">🔭</span>
+        <h4>Observability</h4>
+        <p>LangSmith, Langfuse, Weights & Biases, Arize, Helicone. Log every LLM call: inputs, outputs, latency, cost, model version. You cannot debug what you cannot observe. Critical for prompt iteration.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">🧪</span>
+        <h4>Evaluation frameworks</h4>
+        <p>Promptfoo, DeepEval, Ragas (RAG-specific). Build eval sets before building features. "LLM-as-judge" for scalable automated evaluation. Track regression across prompt versions.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">🏗️</span>
+        <h4>MLOps / LLMOps</h4>
+        <p>MLflow, DVC (experiment tracking, model registry). Feature stores (Feast, Tecton) for ML features. Model versioning, A/B testing infrastructure, rollback capability. CI/CD pipelines for model deployment.</p>
+      </div>
+    </div>
+
+    <h3>Embeddings & Vector Search</h3>
+    <p>Dense embeddings map text/images/audio to vectors in semantic space. Similar meaning → small cosine distance. Key to RAG, semantic search, deduplication, clustering.</p>
+
+    <pre><code><span class="cm"># Typical RAG pipeline</span>
+<span class="kw">from</span> sentence_transformers <span class="kw">import</span> SentenceTransformer
+<span class="kw">import</span> qdrant_client
+
+<span class="cm"># 1. Embed documents at index time</span>
+embedder = <span class="fn">SentenceTransformer</span>(<span class="str">"BAAI/bge-m3"</span>)  <span class="cm"># strong multilingual model</span>
+chunks = <span class="fn">chunk_documents</span>(docs, size=<span class="num">512</span>, overlap=<span class="num">64</span>)
+embeddings = embedder.<span class="fn">encode</span>(chunks, batch_size=<span class="num">32</span>, normalize_embeddings=<span class="kw">True</span>)
+
+<span class="cm"># 2. At query time: embed query → nearest neighbor search</span>
+query_vec = embedder.<span class="fn">encode</span>(user_query, normalize_embeddings=<span class="kw">True</span>)
+results = client.<span class="fn">search</span>(collection_name=<span class="str">"docs"</span>, query_vector=query_vec, limit=<span class="num">5</span>)
+
+<span class="cm"># 3. Inject retrieved context into LLM prompt → generate</span>
+context = <span class="str">"\n"</span>.<span class="fn">join</span>([r.payload[<span class="str">"text"</span>] <span class="kw">for</span> r <span class="kw">in</span> results])
+response = llm.<span class="fn">complete</span>(<span class="fn">f</span><span class="str">"Context:\n{context}\n\nQuestion: {user_query}"</span>)</code></pre>
+
+    <h3>Agentic Systems</h3>
+    <p>Agents use LLMs as a reasoning engine, calling tools iteratively to complete multi-step tasks. The ReAct pattern (Reason + Act) is the dominant paradigm: observe state → reason about next action → execute tool → repeat.</p>
+
+    <div class="callout callout-info">
+      <strong>// Agentic system failure modes:</strong> Agents fail in non-obvious ways. Common issues: tool call hallucination (invoking non-existent tools or wrong arguments), prompt injection (external content hijacking agent instructions), runaway loops (agent stuck in reasoning loop), context overflow (long task histories exceeding context window). Build in explicit loop limits, tool call validation, and human-in-the-loop checkpoints for irreversible actions.
+    </div>
+  </section>
+
+  <!-- ==================== 08 PRODUCTION ==================== -->
+  <section id="production">
+    <div class="section-num">// 08</div>
+    <h2>Production <span class="accent">AI systems</span></h2>
+    <p class="lead">Getting a model to work in a notebook is 10% of the problem. Keeping it working reliably in production is the other 90%.</p>
+
+    <h3>The ML production lifecycle</h3>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-year">PHASE 1</div>
+        <div class="timeline-title">Data pipeline</div>
+        <div class="timeline-desc">Data collection, labeling, validation, versioning. Most underestimated phase. "Production ML is mostly data engineering."</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">PHASE 2</div>
+        <div class="timeline-title">Experimentation</div>
+        <div class="timeline-desc">Feature engineering, model selection, hyperparameter optimization. Track everything. Reproduce everything. Never run experiments you can't reproduce.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">PHASE 3</div>
+        <div class="timeline-title">Deployment</div>
+        <div class="timeline-desc">Containerization, model serving, API design, load testing, shadow mode deployment, canary releases. Gradual rollout. Rollback plan.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">PHASE 4</div>
+        <div class="timeline-title">Monitoring</div>
+        <div class="timeline-desc">Data drift, model drift, prediction drift, business metric correlation. Models degrade silently. Monitoring is not optional.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">PHASE 5</div>
+        <div class="timeline-title">Continuous improvement</div>
+        <div class="timeline-desc">Feedback loops from production, retraining pipelines, champion/challenger testing. The model at launch is the worst it will ever be — if you have a good feedback loop.</div>
+      </div>
+    </div>
+
+    <h3>Monitoring in production</h3>
+    <div class="grid">
+      <div class="card">
+        <h4>Data drift</h4>
+        <p>Input distribution changes. Measure: PSI (Population Stability Index) for categoricals, Kolmogorov-Smirnov for continuous features. Alert when PSI &gt; 0.2.</p>
+      </div>
+      <div class="card">
+        <h4>Concept drift</h4>
+        <p>The relationship between inputs and outputs changes over time. E.g., user behavior shifts post-pandemic. Hardest to detect — requires labeled production data or proxy signals.</p>
+      </div>
+      <div class="card">
+        <h4>LLM-specific monitoring</h4>
+        <p>Token cost per request, latency p50/p95/p99, refusal rate, hallucination rate (estimated), user feedback signals, topic drift in inputs. Use structured logging for every LLM call.</p>
+      </div>
+      <div class="card">
+        <h4>Shadow mode & A/B testing</h4>
+        <p>Run new model in parallel without serving predictions (shadow mode) to validate behavior. Then controlled A/B test. Never swap models cold in production without validation.</p>
+      </div>
+    </div>
+
+    <div class="callout callout-success">
+      <strong>// Rule of thumb:</strong> Before deploying any model, define: (1) the success metric, (2) the failure metric, (3) the rollback trigger threshold, (4) who gets paged when it degrades. If you can't answer these, you're not ready to deploy.
+    </div>
+  </section>
+
+  <!-- ==================== 09 SAFETY ==================== -->
+  <section id="safety">
+    <div class="section-num">// 09</div>
+    <h2>Safety <span class="accent">& Ethics</span></h2>
+    <p class="lead">AI safety is not soft. For engineers building systems at scale, it's a technical discipline with real consequences. You will encounter these problems in production.</p>
+
+    <div class="grid">
+      <div class="card">
+        <span class="card-icon">⚖️</span>
+        <h4>Bias & Fairness</h4>
+        <p>Models encode biases present in training data. Measure: disparate impact, equalized odds, demographic parity across protected attributes. Mitigate: data balancing, adversarial debiasing, fairness constraints. There is no single "fair" definition — they're mathematically incompatible. Choose explicitly.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">🔒</span>
+        <h4>Privacy</h4>
+        <p>Training data memorization is real and measurable. LLMs can regurgitate PII from training data. Differential Privacy adds noise during training to provide formal guarantees. For fine-tuning on sensitive data: federated learning, DP-SGD, or strict data anonymization.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">💉</span>
+        <h4>Prompt injection</h4>
+        <p>Malicious content in LLM context hijacks instructions. Affects any system processing untrusted content: RAG pipelines, email summarizers, web agents. Mitigations: input sanitization, privilege separation, output validation, never trust model output for irreversible actions.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">🌀</span>
+        <h4>Hallucination</h4>
+        <p>LLMs confidently generate false information. Unavoidable at some rate due to architecture. Mitigations: RAG (ground in retrieved facts), citation requirements, temperature reduction, tool use for verifiable facts, human review gates for high-stakes outputs.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">🎭</span>
+        <h4>Adversarial robustness</h4>
+        <p>Small perturbations to inputs cause dramatic model failures. Especially relevant for vision models in safety-critical settings (autonomous vehicles, medical imaging). Adversarial training improves robustness at accuracy cost.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">📋</span>
+        <h4>AI Governance & Compliance</h4>
+        <p>EU AI Act (2025): risk-based regulation; high-risk applications (hiring, credit, medical) face strict requirements. US EO on AI. Model cards, datasheets for datasets, audit trails. Increasingly a legal requirement, not just best practice.</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>// Note:</strong> Responsible AI is not about limiting capability — it's about building systems with predictable, auditable behavior that hold up under adversarial conditions and scale. The most robust systems have these properties baked into architecture, not bolted on at the end.
+    </div>
+  </section>
+
+  <!-- ==================== 10 LANDSCAPE ==================== -->
+  <section id="landscape">
+    <div class="section-num">// 10</div>
+    <h2>The Model <span class="accent">Landscape</span></h2>
+    <p class="lead">The frontier moves every 3–6 months. These are the reference points as of early 2025. Know the players; understand the tradeoffs between cost, latency, capability, and openness.</p>
+
+    <h3>Frontier models (API)</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Model</th><th>Provider</th><th>Strengths</th><th>Context</th></tr></thead>
+        <tbody>
+          <tr><td>GPT-4o</td><td>OpenAI</td><td>Multimodal, strong reasoning, wide ecosystem</td><td>128k</td></tr>
+          <tr><td>o1 / o3</td><td>OpenAI</td><td>Extended thinking, math & code, best on hard reasoning</td><td>200k</td></tr>
+          <tr><td>Claude 3.5 / 3 Opus</td><td>Anthropic</td><td>Instruction following, long context, safety</td><td>200k</td></tr>
+          <tr><td>Gemini 1.5 Pro</td><td>Google</td><td>1M token context, multimodal, Google integration</td><td>1M+</td></tr>
+          <tr><td>Mistral Large</td><td>Mistral AI</td><td>Strong European option, good at code, multilingual</td><td>128k</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Open-weight models</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Model</th><th>Parameters</th><th>License</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>LLaMA 3.1</td><td>8B / 70B / 405B</td><td>Community (permissive)</td><td>Meta's flagship open model; strong baseline for fine-tuning</td></tr>
+          <tr><td>Mistral 7B / Mixtral 8x7B</td><td>7B / 47B</td><td>Apache 2.0</td><td>MoE architecture; excellent efficiency-performance tradeoff</td></tr>
+          <tr><td>Qwen 2.5</td><td>0.5B–72B</td><td>Apache 2.0</td><td>Alibaba; strong code and math; genuinely excellent multilingual</td></tr>
+          <tr><td>Gemma 2</td><td>2B / 9B / 27B</td><td>Gemma ToS</td><td>Google; strong small models; knowledge distilled from Gemini</td></tr>
+          <tr><td>DeepSeek-R1</td><td>7B–671B</td><td>MIT</td><td>Chain-of-thought reasoning; competitive with o1 on benchmarks</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Specialized models</h3>
+    <div class="pill-list">
+      <span class="pill accent">Whisper (speech-to-text)</span>
+      <span class="pill accent">DALL·E 3 (image gen)</span>
+      <span class="pill accent">Stable Diffusion (image gen, open)</span>
+      <span class="pill accent2">AlphaFold 3 (protein structure)</span>
+      <span class="pill accent2">Codestral (code, Mistral)</span>
+      <span class="pill accent2">text-embedding-3-large (embeddings)</span>
+      <span class="pill accent3">Sora (video gen)</span>
+      <span class="pill accent3">Kling / Runway (video gen)</span>
+      <span class="pill">Florence-2 (vision, grounding)</span>
+      <span class="pill">Llava / Idefics (multimodal, open)</span>
+    </div>
+
+    <h3>Key trends to watch</h3>
+    <div class="grid">
+      <div class="card">
+        <h4>Test-time compute scaling</h4>
+        <p>OpenAI o1/o3, DeepSeek-R1: scale compute at inference time (longer thinking chains) rather than just training time. Fundamentally changes the cost/performance tradeoff.</p>
+      </div>
+      <div class="card">
+        <h4>Multimodality as baseline</h4>
+        <p>Text-only models becoming legacy. Vision, audio, video input/output increasingly standard. Expect native multimodal models to dominate by end of 2025.</p>
+      </div>
+      <div class="card">
+        <h4>Agents & MCP</h4>
+        <p>Anthropic's Model Context Protocol (MCP) emerging as a standard for tool/resource access. Agentic systems moving from research to production. Significant infrastructure engineering challenge.</p>
+      </div>
+      <div class="card">
+        <h4>Small models on device</h4>
+        <p>Phi-3 Mini (3.8B), Gemma 2B, LLaMA 3 8B: capable enough for many tasks, run locally. On-device inference for privacy, latency, and offline use. Major growth area for mobile/edge.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div>Built for engineers who move fast. <span>// Updated 2025</span></div>
+  <div>AI Landscape · Foundation Models · Production ML</div>
+</footer>
+
+<script>
+  // Intersection Observer for section animations
+  const sections = document.querySelectorAll('section');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        // Animate metric bars inside this section
+        entry.target.querySelectorAll('.metric-fill').forEach(bar => {
+          setTimeout(() => bar.classList.add('animated'), 200);
+        });
+      }
+    });
+  }, { threshold: 0.08 });
+
+  sections.forEach(s => observer.observe(s));
+
+  // Set metric bar widths dynamically from data or defaults
+  document.querySelectorAll('.metric-fill').forEach((bar, i) => {
+    const widths = ['72%', '85%', '78%', '69%', '91%', '76%', '83%', '65%'];
+    bar.style.setProperty('--w', widths[i % widths.length]);
+  });
+</script>
+
+</body>
+</html>
