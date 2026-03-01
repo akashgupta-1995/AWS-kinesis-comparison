@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free AI Resources · Senior Engineers</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;0,900;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f0e8;
+    --surface: #ede8de;
+    --card: #ffffff;
+    --border: #d4cfc4;
+    --ink: #1a1814;
+    --muted: #7a7568;
+    --accent: #c44b1e;
+    --accent2: #1e5fa4;
+    --accent3: #2a8c5a;
+    --accent4: #8c2a7a;
+    --stamp: #c44b1e;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'DM Mono', monospace;
+    font-size: 13.5px;
+    line-height: 1.7;
+  }
+
+  /* PAPER TEXTURE */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: 
+      radial-gradient(ellipse at 20% 50%, rgba(196,75,30,0.03) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(30,95,164,0.03) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* HEADER */
+  header {
+    position: relative;
+    padding: 5rem 7vw 4rem;
+    border-bottom: 3px double var(--border);
+    overflow: hidden;
+  }
+
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 2rem;
+  }
+
+  .header-eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .header-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 2rem;
+    height: 1px;
+    background: var(--muted);
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(2.8rem, 6vw, 5.5rem);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    max-width: 700px;
+  }
+
+  h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .header-meta {
+    text-align: right;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    line-height: 2.2;
+  }
+
+  .stamp {
+    display: inline-block;
+    border: 2px solid var(--accent);
+    color: var(--accent);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.8rem;
+    transform: rotate(-2deg);
+    margin-top: 0.5rem;
+  }
+
+  .header-desc {
+    margin-top: 2rem;
+    max-width: 600px;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.8;
+    border-left: 3px solid var(--border);
+    padding-left: 1.2rem;
+  }
+
+  /* NAV TOC */
+  .toc-strip {
+    background: var(--ink);
+    padding: 1rem 7vw;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+  }
+
+  .toc-strip a {
+    color: var(--bg);
+    text-decoration: none;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.7;
+    transition: opacity 0.15s;
+  }
+
+  .toc-strip a:hover { opacity: 1; }
+  .toc-strip a span { color: var(--accent); margin-right: 0.3rem; }
+
+  /* MAIN */
+  main { padding: 0 7vw; position: relative; z-index: 1; }
+
+  /* SECTION */
+  section {
+    padding: 4rem 0;
+    border-bottom: 1px solid var(--border);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  section.visible { opacity: 1; transform: none; }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .section-num {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+
+  h2 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(1.6rem, 3.5vw, 2.6rem);
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+
+  .section-tagline {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 2.5rem;
+    max-width: 680px;
+    line-height: 1.7;
+    border-bottom: 1px dashed var(--border);
+    padding-bottom: 1.5rem;
+  }
+
+  /* RESOURCE CARD */
+  .resources-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .resource-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    position: relative;
+    transition: transform 0.15s, box-shadow 0.15s;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .resource-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(26,24,20,0.08);
+  }
+
+  .card-type {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .type-badge {
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+
+  .type-course { background: rgba(196,75,30,0.1); color: var(--accent); }
+  .type-video { background: rgba(30,95,164,0.1); color: var(--accent2); }
+  .type-repo { background: rgba(42,140,90,0.1); color: var(--accent3); }
+  .type-paper { background: rgba(140,42,122,0.1); color: var(--accent4); }
+  .type-book { background: rgba(26,24,20,0.08); color: var(--ink); }
+  .type-tool { background: rgba(42,140,90,0.08); color: var(--accent3); }
+  .type-blog { background: rgba(30,95,164,0.08); color: var(--accent2); }
+
+  .free-tag {
+    margin-left: auto;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent3);
+    border: 1px solid var(--accent3);
+    padding: 1px 6px;
+  }
+
+  .resource-title {
+    font-family: 'Fraunces', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--ink);
+  }
+
+  .resource-author {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  .resource-desc {
+    font-size: 12px;
+    color: #5a554e;
+    line-height: 1.65;
+    flex: 1;
+  }
+
+  .resource-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--accent2);
+    text-decoration: none;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.15s;
+    align-self: flex-start;
+    margin-top: auto;
+  }
+
+  .resource-link:hover { border-bottom-color: var(--accent2); }
+  .resource-link::after { content: '→'; }
+
+  /* FEATURED RESOURCE */
+  .resource-card.featured {
+    border-color: var(--accent);
+    border-width: 2px;
+  }
+
+  .resource-card.featured::before {
+    content: '★ START HERE';
+    position: absolute;
+    top: -1px;
+    right: 1rem;
+    background: var(--accent);
+    color: white;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    padding: 2px 8px;
+  }
+
+  /* ALSO SEE */
+  .also-see {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1.2rem 1.5rem;
+    margin-top: 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .also-see-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-right: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  .also-link {
+    font-size: 12px;
+    color: var(--accent2);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--accent2);
+  }
+
+  .also-link:hover { border-bottom-style: solid; }
+
+  /* FOOTER */
+  footer {
+    padding: 3rem 7vw;
+    border-top: 3px double var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  footer strong { color: var(--ink); font-family: 'Fraunces', serif; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); }
+
+  @media (max-width: 640px) {
+    header { padding: 3rem 1.5rem 2.5rem; }
+    main { padding: 0 1.5rem; }
+    .toc-strip { padding: 1rem 1.5rem; }
+    footer { padding: 2rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-eyebrow">Free Learning Resources</div>
+  <div class="header-top">
+    <div>
+      <h1>AI for<br><em>Senior Engineers</em></h1>
+    </div>
+    <div class="header-meta">
+      10 Sections<br>
+      60+ Resources<br>
+      100% Free<br>
+      <span class="stamp">Curated 2025</span>
+    </div>
+  </div>
+  <p class="header-desc">The best free courses, papers, tools, and references for each of the 10 AI domains an 8-year engineer should master. No fluff — direct links, what's inside, and why it matters.</p>
+</header>
+
+<nav class="toc-strip">
+  <a href="#foundations"><span>01</span>Foundations</a>
+  <a href="#architectures"><span>02</span>Architectures</a>
+  <a href="#training"><span>03</span>Training</a>
+  <a href="#llms"><span>04</span>LLMs</a>
+  <a href="#evaluation"><span>05</span>Evaluation</a>
+  <a href="#inference"><span>06</span>Inference</a>
+  <a href="#engineering"><span>07</span>AI Engineering</a>
+  <a href="#production"><span>08</span>Production</a>
+  <a href="#safety"><span>09</span>Safety & Ethics</a>
+  <a href="#landscape"><span>10</span>Landscape</a>
+</nav>
+
+<main>
+
+  <!-- ==================== 01 FOUNDATIONS ==================== -->
+  <section id="foundations">
+    <div class="section-header">
+      <span class="section-num">// 01</span>
+      <h2>Foundations</h2>
+    </div>
+    <p class="section-tagline">The core concepts of AI, ML, deep learning, and classical methods. Even with 8 years of engineering, grounding your mental model here pays dividends everywhere else.</p>
+
+    <div class="resources-grid">
+      <div class="resource-card featured">
+        <div class="card-type">
+          <span class="type-badge type-course">Course</span>
+          <span class="free-tag">Free to Audit</span>
+        </div>
+        <div class="resource-title">Machine Learning Specialization — Andrew Ng</div>
+        <div class="resource-author">DeepLearning.AI · Coursera</div>
+        <p class="resource-desc">The canonical starting point. Covers supervised & unsupervised learning, neural networks, decision trees, and best practices. Completely free to audit. The gold standard for foundational ML knowledge.</p>
+        <a class="resource-link" href="https://www.coursera.org/specializations/machine-learning-introduction" target="_blank">coursera.org</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-course">Course</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">Google Machine Learning Crash Course</div>
+        <div class="resource-author">Google Developers</div>
+        <p class="resource-desc">Dense, fast-paced introduction to ML with TensorFlow. Covers linear regression, neural networks, fairness, and real-world considerations. Great refresher for engineers who already know Python.</p>
+        <a class="resource-link" href="https://developers.google.com/machine-learning/crash-course" target="_blank">developers.google.com</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-course">Course</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">Practical Deep Learning for Coders</div>
+        <div class="resource-author">fast.ai · Jeremy Howard</div>
+        <p class="resource-desc">Top-down, code-first approach to deep learning. Built for people who know how to code. Covers vision, NLP, tabular data, and model deployment. One of the most loved ML courses on the internet.</p>
+        <a class="resource-link" href="https://course.fast.ai" target="_blank">course.fast.ai</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-course">Course</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">MIT 6.034 — Artificial Intelligence</div>
+        <div class="resource-author">MIT OpenCourseWare</div>
+        <p class="resource-desc">Full MIT AI course with lecture videos, notes, and problem sets. Covers search, constraint satisfaction, knowledge, planning, learning, and neural nets. Rigorous academic treatment, free forever.</p>
+        <a class="resource-link" href="https://ocw.mit.edu/courses/6-034-artificial-intelligence-fall-2010/" target="_blank">ocw.mit.edu</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-book">Book</span>
+          <span class="free-tag">Free Online</span>
+        </div>
+        <div class="resource-title">The StatQuest Illustrated Machine Learning Book</div>
+        <div class="resource-author">Josh Starmer · StatQuest YouTube</div>
+        <p class="resource-desc">Intuitive visual explainers for every major ML algorithm — SVMs, random forests, gradient boosting, PCA, and more. The YouTube channel alone has 1M+ subscribers for good reason. Free videos, paid book.</p>
+        <a class="resource-link" href="https://www.youtube.com/@statquest" target="_blank">youtube.com/@statquest</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-blog">Reference</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">Scikit-learn Documentation & User Guide</div>
+        <div class="resource-author">scikit-learn.org</div>
+        <p class="resource-desc">The best ML reference that isn't a textbook. Algorithm documentation includes mathematical derivation, code examples, and guidance on when to use each method. Read the User Guide cover to cover.</p>
+        <a class="resource-link" href="https://scikit-learn.org/stable/user_guide.html" target="_blank">scikit-learn.org</a>
+      </div>
+    </div>
+
+    <div class="also-see">
+      <span class="also-see-label">Also See:</span>
+      <a class="also-link" href="https://www.deeplearning.ai/courses/ai-for-everyone/" target="_blank">AI for Everyone (Andrew Ng)</a>
+      <a class="also-link" href="https://mlcourse.ai/book/index.html" target="_blank">mlcourse.ai Open Course</a>
+      <a class="also-link" href="https://openlearning.mit.edu/courses-programs/mit-opencourseware" target="_blank">MIT OpenLearning AI Track</a>
+    </div>
+  </section>
+
+  <!-- ==================== 02 ARCHITECTURES ==================== -->
+  <section id="architectures">
+    <div class="section-header">
+      <span class="section-num">// 02</span>
+      <h2>Architectures</h2>
+    </div>
+    <p class="section-tagline">Transformers, CNNs, diffusion models, GNNs — the architectural choices that encode your inductive biases. These resources go from intuition to implementation.</p>
+
+    <div class="resources-grid">
+      <div class="resource-card featured">
+        <div class="card-type">
+          <span class="type-badge type-video">Video Series</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">Neural Networks: Zero to Hero</div>
+        <div class="resource-author">Andrej Karpathy · YouTube</div>
+        <p class="resource-desc">Build a GPT from scratch in Python. Goes through backprop, MLPs, RNNs, and Transformers in exact mathematical detail. Best deep-dive into neural network internals available anywhere, for free.</p>
+        <a class="resource-link" href="https://karpathy.ai/zero-to-hero.html" target="_blank">karpathy.ai/zero-to-hero</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-tool">Interactive</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">Transformer Explainer</div>
+        <div class="resource-author">Georgia Tech · poloclub.github.io</div>
+        <p class="resource-desc">Live GPT-2 model running in the browser with real-time attention visualizations. Interactively explore how tokens get processed, attended over, and decoded. Exceptional visual intuition builder.</p>
+        <a class="resource-link" href="https://poloclub.github.io/transformer-explainer/" target="_blank">poloclub.github.io</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-course">Course</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">How Transformer LLMs Work</div>
+        <div class="resource-author">DeepLearning.AI · Jay Alammar</div>
+        <p class="resource-desc">Visual, code-driven walkthrough of transformer internals: tokenization, embeddings, attention, feedforward layers, and the language model head. Created by the author of the famous "Illustrated Transformer" blog posts.</p>
+        <a class="resource-link" href="https://www.deeplearning.ai/short-courses/how-transformer-llms-work/" target="_blank">deeplearning.ai</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-paper">Paper</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">Attention Is All You Need</div>
+        <div class="resource-author">Vaswani et al., 2017 · arXiv</div>
+        <p class="resource-desc">The original Transformer paper. Surprisingly readable. Every senior AI engineer should have read this. Pair it with Jay Alammar's "Illustrated Transformer" blog post for the visual companion.</p>
+        <a class="resource-link" href="https://arxiv.org/abs/1706.03762" target="_blank">arxiv.org</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-course">Course</span>
+          <span class="free-tag">Free to Audit</span>
+        </div>
+        <div class="resource-title">Deep Learning Specialization</div>
+        <div class="resource-author">Andrew Ng · DeepLearning.AI</div>
+        <p class="resource-desc">5-course series covering CNNs, RNNs, sequence models, and Transformer architectures. Comprehensive coverage of when and why each architecture is appropriate. Free to audit on Coursera.</p>
+        <a class="resource-link" href="https://www.coursera.org/specializations/deep-learning" target="_blank">coursera.org</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-blog">Blog Series</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">The Illustrated Series — Jay Alammar</div>
+        <div class="resource-author">jalammar.github.io</div>
+        <p class="resource-desc">The best visual explanations of Transformers, BERT, GPT-2, and more. "The Illustrated Transformer" alone has been read by millions of engineers. Essential reading for architecture intuition.</p>
+        <a class="resource-link" href="https://jalammar.github.io" target="_blank">jalammar.github.io</a>
+      </div>
+    </div>
+
+    <div class="also-see">
+      <span class="also-see-label">Also See:</span>
+      <a class="also-link" href="https://d2l.ai" target="_blank">Dive into Deep Learning (d2l.ai)</a>
+      <a class="also-link" href="https://github.com/labmlai/annotated_deep_learning_paper_implementations" target="_blank">Annotated DL Papers (labmlai)</a>
+      <a class="also-link" href="https://cs231n.stanford.edu" target="_blank">Stanford CS231n (CNNs)</a>
+    </div>
+  </section>
+
+  <!-- ==================== 03 TRAINING ==================== -->
+  <section id="training">
+    <div class="section-header">
+      <span class="section-num">// 03</span>
+      <h2>Training Mechanics</h2>
+    </div>
+    <p class="section-tagline">Optimizers, loss functions, mixed precision, distributed training. Where theory meets the GPU. These resources take you from equations to working code.</p>
+
+    <div class="resources-grid">
+      <div class="resource-card featured">
+        <div class="card-type">
+          <span class="type-badge type-video">Video Series</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">Neural Networks: Zero to Hero — makemore series</div>
+        <div class="resource-author">Andrej Karpathy · YouTube</div>
+        <p class="resource-desc">Implements backpropagation, batch normalization, and optimizers from scratch in pure Python/NumPy. The best way to understand what's actually happening inside a training loop — no black boxes.</p>
+        <a class="resource-link" href="https://www.youtube.com/playlist?list=PLAqhIrjkxbuWI23v9cThsA9GvCAUhRvKZ" target="_blank">youtube.com</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-course">Course</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">PyTorch Official Tutorials</div>
+        <div class="resource-author">PyTorch · pytorch.org</div>
+        <p class="resource-desc">Hands-on tutorials for training loops, autograd, distributed training with DDP, mixed precision with AMP, and more. The authoritative reference for PyTorch-based training. Always up to date.</p>
+        <a class="resource-link" href="https://pytorch.org/tutorials/" target="_blank">pytorch.org/tutorials</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-blog">Blog</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">Lilian Weng's Blog — Lilianweng.github.io</div>
+        <div class="resource-author">Lilian Weng · OpenAI</div>
+        <p class="resource-desc">Possibly the best technical ML blog on the internet. Deep, mathematically rigorous posts on attention mechanisms, diffusion models, RLHF, LLM alignment, and more. Essential bookmarking.</p>
+        <a class="resource-link" href="https://lilianweng.github.io" target="_blank">lilianweng.github.io</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-course">Course</span>
+          <span class="free-tag">Free to Audit</span>
+        </div>
+        <div class="resource-title">Improving Deep Neural Networks</div>
+        <div class="resource-author">Andrew Ng · DeepLearning.AI (Course 2 of 5)</div>
+        <p class="resource-desc">Covers hyperparameter tuning, regularization, optimization algorithms (Adam, RMSprop), batch norm, and ML diagnostics. The practical "how to make training work" course. Free to audit on Coursera.</p>
+        <a class="resource-link" href="https://www.coursera.org/learn/deep-neural-network" target="_blank">coursera.org</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-repo">Repo</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">nanoGPT — GPT training from scratch</div>
+        <div class="resource-author">Andrej Karpathy · GitHub</div>
+        <p class="resource-desc">~300 lines of clean PyTorch to train a GPT. The cleanest possible reference implementation of a modern LLM training setup. Read the code; it will change how you think about training pipelines.</p>
+        <a class="resource-link" href="https://github.com/karpathy/nanoGPT" target="_blank">github.com/karpathy/nanoGPT</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-repo">Docs</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">DeepSpeed Documentation</div>
+        <div class="resource-author">Microsoft · deepspeed.ai</div>
+        <p class="resource-desc">The definitive resource for ZeRO optimization, mixed precision, pipeline parallelism, and training at scale. Practical guides for distributed training strategies used in production LLM training today.</p>
+        <a class="resource-link" href="https://www.deepspeed.ai/tutorials/" target="_blank">deepspeed.ai</a>
+      </div>
+    </div>
+
+    <div class="also-see">
+      <span class="also-see-label">Also See:</span>
+      <a class="also-link" href="https://github.com/huggingface/accelerate" target="_blank">HuggingFace Accelerate</a>
+      <a class="also-link" href="https://wandb.ai/fully-connected" target="_blank">W&B Fully Connected Blog</a>
+      <a class="also-link" href="https://cs231n.stanford.edu/slides/" target="_blank">Stanford CS231n Slides (Backprop)</a>
+    </div>
+  </section>
+
+  <!-- ==================== 04 LLMs ==================== -->
+  <section id="llms">
+    <div class="section-header">
+      <span class="section-num">// 04</span>
+      <h2>Large Language Models</h2>
+    </div>
+    <p class="section-tagline">Pretraining, RLHF, DPO, fine-tuning, prompting. The full picture of how LLMs are built and how to work with them effectively.</p>
+
+    <div class="resources-grid">
+      <div class="resource-card featured">
+        <div class="card-type">
+          <span class="type-badge type-course">Course</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">HuggingFace LLM Course</div>
+        <div class="resource-author">Hugging Face</div>
+        <p class="resource-desc">End-to-end: Transformer internals, tokenization, fine-tuning with PEFT/LoRA, RLHF, instruction tuning, and deployment. Uses the HuggingFace ecosystem throughout. The most complete free LLM course available.</p>
+        <a class="resource-link" href="https://huggingface.co/learn/llm-course" target="_blank">huggingface.co/learn/llm-course</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-repo">Book + Code</span>
+          <span class="free-tag">Free Code</span>
+        </div>
+        <div class="resource-title">Build an LLM From Scratch</div>
+        <div class="resource-author">Sebastian Raschka · GitHub</div>
+        <p class="resource-desc">Implement a GPT-like LLM from scratch in Python: tokenization, attention, pretraining, fine-tuning, RLHF. Companion code for the book freely available. The most hands-on path through LLM internals.</p>
+        <a class="resource-link" href="https://github.com/rasbt/LLMs-from-scratch" target="_blank">github.com/rasbt/LLMs-from-scratch</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-course">Course</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">Finetuning Large Language Models</div>
+        <div class="resource-author">DeepLearning.AI · Sharon Zhou</div>
+        <p class="resource-desc">Covers when and why to fine-tune vs prompt, instruction fine-tuning, data preparation, and training LoRA adapters. Short (1–2 hours), practical, and directly applicable to real engineering tasks.</p>
+        <a class="resource-link" href="https://www.deeplearning.ai/short-courses/finetuning-large-language-models/" target="_blank">deeplearning.ai</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-course">Course</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">Generative AI for Beginners (21 Lessons)</div>
+        <div class="resource-author">Microsoft · GitHub</div>
+        <p class="resource-desc">21-lesson curriculum covering LLM fundamentals, prompt engineering, RAG, fine-tuning, responsible AI, and LLMOps. All materials freely available on GitHub. Strong practical focus with code examples.</p>
+        <a class="resource-link" href="https://github.com/microsoft/generative-ai-for-beginners" target="_blank">github.com/microsoft/generative-ai-for-beginners</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-course">Course</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">Cohere LLM University</div>
+        <div class="resource-author">Cohere · llmu.cohere.com</div>
+        <p class="resource-desc">Free, vendor-agnostic curriculum covering LLM foundations, embeddings, semantic search, RAG, fine-tuning, and agents. Well-structured with hands-on examples. Good alternative perspective to HF course.</p>
+        <a class="resource-link" href="https://cohere.com/llmu" target="_blank">cohere.com/llmu</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-blog">Newsletter</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">Ahead of AI — Sebastian Raschka</div>
+        <div class="resource-author">sebastianraschka.com</div>
+        <p class="resource-desc">Monthly deep-dives on LLM research, architecture comparisons, training techniques, and paper summaries. Some of the most clear-headed technical writing on LLMs published today.</p>
+        <a class="resource-link" href="https://magazine.sebastianraschka.com" target="_blank">magazine.sebastianraschka.com</a>
+      </div>
+    </div>
+
+    <div class="also-see">
+      <span class="also-see-label">Also See:</span>
+      <a class="also-link" href="https://www.deeplearning.ai/short-courses/chatgpt-prompt-engineering-for-developers/" target="_blank">Prompt Engineering for Developers (OpenAI × DeepLearning.AI)</a>
+      <a class="also-link" href="https://arxiv.org/abs/2203.02155" target="_blank">InstructGPT Paper (RLHF)</a>
+      <a class="also-link" href="https://arxiv.org/abs/2307.09288" target="_blank">LLaMA 2 Technical Report</a>
+    </div>
+  </section>
+
+  <!-- ==================== 05 EVALUATION ==================== -->
+  <section id="evaluation">
+    <div class="section-header">
+      <span class="section-num">// 05</span>
+      <h2>Evaluation & Metrics</h2>
+    </div>
+    <p class="section-tagline">How to measure whether your model actually works — and what "works" even means. Evaluation is the most underrated skill in AI engineering.</p>
+
+    <div class="resources-grid">
+      <div class="resource-card featured">
+        <div class="card-type">
+          <span class="type-badge type-course">Course</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">LLM Evaluation for AI Builders (Cohort Course)</div>
+        <div class="resource-author">Evidently AI</div>
+        <p class="resource-desc">10 end-to-end code tutorials: building test datasets, comparing prompts/models, custom LLM judges, RAG evaluations, adversarial testing. Free, practical, and focused on production LLM systems.</p>
+        <a class="resource-link" href="https://www.evidentlyai.com/llm-evaluation-course" target="_blank">evidentlyai.com</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-course">Course</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">Evaluating and Debugging Generative AI</div>
+        <div class="resource-author">DeepLearning.AI × Weights & Biases</div>
+        <p class="resource-desc">Covers instrument-based evaluation, tracking experiments with W&B, debugging generative models, and evaluating RAG systems. Practical labs with working code. Free short course.</p>
+        <a class="resource-link" href="https://www.deeplearning.ai/short-courses/evaluating-debugging-generative-ai/" target="_blank">deeplearning.ai</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-tool">Platform</span>
+          <span class="free-tag">Free Tier</span>
+        </div>
+        <div class="resource-title">HELM — Holistic Evaluation of Language Models</div>
+        <div class="resource-author">Stanford CRFM</div>
+        <p class="resource-desc">Stanford's comprehensive benchmarking framework for LLMs. Evaluates accuracy, calibration, robustness, fairness, efficiency across dozens of scenarios. The reference for understanding what benchmarks actually measure.</p>
+        <a class="resource-link" href="https://crfm.stanford.edu/helm/latest/" target="_blank">crfm.stanford.edu/helm</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-tool">Framework</span>
+          <span class="free-tag">Open Source</span>
+        </div>
+        <div class="resource-title">promptfoo — LLM Testing Framework</div>
+        <div class="resource-author">promptfoo.dev</div>
+        <p class="resource-desc">Open-source CLI for testing LLM prompts: A/B compare models, catch regressions, run automated red-teaming. Used by engineering teams building on top of GPT-4, Claude, and open models.</p>
+        <a class="resource-link" href="https://www.promptfoo.dev/docs/intro/" target="_blank">promptfoo.dev</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-blog">Reference</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">Hugging Face Open LLM Leaderboard</div>
+        <div class="resource-author">Hugging Face</div>
+        <p class="resource-desc">Live leaderboard of open-weight model performance across standard benchmarks (MMLU, HellaSwag, TruthfulQA, ARC). Useful for model selection and understanding current SOTA. Updated continuously.</p>
+        <a class="resource-link" href="https://huggingface.co/spaces/HuggingFaceH4/open_llm_leaderboard" target="_blank">huggingface.co</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-paper">Paper</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">Judging LLM-as-a-Judge with MT-Bench</div>
+        <div class="resource-author">Zheng et al., 2023 · arXiv</div>
+        <p class="resource-desc">The key paper behind using strong LLMs (GPT-4) as automated evaluators for other LLMs. Covers positional bias, verbosity bias, self-enhancement bias — essential reading before building any LLM judge.</p>
+        <a class="resource-link" href="https://arxiv.org/abs/2306.05685" target="_blank">arxiv.org</a>
+      </div>
+    </div>
+
+    <div class="also-see">
+      <span class="also-see-label">Also See:</span>
+      <a class="also-link" href="https://github.com/confident-ai/deepeval" target="_blank">DeepEval (open-source LLM evals)</a>
+      <a class="also-link" href="https://docs.ragas.io" target="_blank">Ragas (RAG evaluation)</a>
+      <a class="also-link" href="https://paperswithcode.com/sota" target="_blank">Papers with Code SOTA Tracker</a>
+    </div>
+  </section>
+
+  <!-- ==================== 06 INFERENCE ==================== -->
+  <section id="inference">
+    <div class="section-header">
+      <span class="section-num">// 06</span>
+      <h2>Inference & Serving</h2>
+    </div>
+    <p class="section-tagline">Getting your model to production efficiently. Quantization, KV cache, continuous batching, and the tools that make LLM serving economically viable.</p>
+
+    <div class="resources-grid">
+      <div class="resource-card featured">
+        <div class="card-type">
+          <span class="type-badge type-course">Course</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">Efficiently Serving LLMs</div>
+        <div class="resource-author">DeepLearning.AI</div>
+        <p class="resource-desc">Covers KV cache, continuous batching, quantization, speculative decoding, and how vLLM works. Exactly the production serving knowledge a senior engineer needs. Hands-on labs included. Free short course.</p>
+        <a class="resource-link" href="https://www.deeplearning.ai/short-courses/efficiently-serving-llms/" target="_blank">deeplearning.ai</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-repo">Docs</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">vLLM Documentation</div>
+        <div class="resource-author">vLLM Project</div>
+        <p class="resource-desc">The industry-standard LLM serving engine. Docs cover PagedAttention, continuous batching, quantization methods, multi-GPU serving, and deployment. If you're serving LLMs, start here.</p>
+        <a class="resource-link" href="https://docs.vllm.ai/en/latest/" target="_blank">docs.vllm.ai</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-paper">Paper</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">Efficient Memory Management for LLM Serving with PagedAttention</div>
+        <div class="resource-author">Kwon et al., 2023 · arXiv</div>
+        <p class="resource-desc">The paper behind vLLM's core innovation. Explains virtual memory paging applied to KV cache, why it achieves near-zero waste, and 20× throughput improvements. Short, readable, and highly important.</p>
+        <a class="resource-link" href="https://arxiv.org/abs/2309.06180" target="_blank">arxiv.org</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-repo">Tool</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">llama.cpp</div>
+        <div class="resource-author">Georgi Gerganov · GitHub</div>
+        <p class="resource-desc">C++ inference engine for running LLaMA-family models on CPU (and GPU). The reference implementation for local LLM inference and quantization. Understand it to understand INT4/INT8 quantization in practice.</p>
+        <a class="resource-link" href="https://github.com/ggerganov/llama.cpp" target="_blank">github.com/ggerganov/llama.cpp</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-blog">Post</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">The Transformer KV Cache Explained</div>
+        <div class="resource-author">Hugging Face Blog</div>
+        <p class="resource-desc">Step-by-step explanation of KV caching mechanics, why it's essential for autoregressive decoding, memory implications, and how different serving frameworks manage it. A must-read before your first LLM deployment.</p>
+        <a class="resource-link" href="https://huggingface.co/blog/kv-cache-quantization" target="_blank">huggingface.co/blog</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-repo">Docs</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">NVIDIA Triton Inference Server</div>
+        <div class="resource-author">NVIDIA</div>
+        <p class="resource-desc">Production-grade model serving framework supporting PyTorch, ONNX, TensorRT, and more. Includes dynamic batching, model ensembles, multi-GPU, and observability. The enterprise-grade serving reference.</p>
+        <a class="resource-link" href="https://docs.nvidia.com/deeplearning/triton-inference-server/user-guide/" target="_blank">docs.nvidia.com</a>
+      </div>
+    </div>
+
+    <div class="also-see">
+      <span class="also-see-label">Also See:</span>
+      <a class="also-link" href="https://github.com/huggingface/text-generation-inference" target="_blank">TGI — Text Generation Inference (HuggingFace)</a>
+      <a class="also-link" href="https://arxiv.org/abs/2205.14135" target="_blank">FlashAttention Paper</a>
+      <a class="also-link" href="https://ollama.com" target="_blank">Ollama (local LLM serving)</a>
+    </div>
+  </section>
+
+  <!-- ==================== 07 AI ENGINEERING ==================== -->
+  <section id="engineering">
+    <div class="section-header">
+      <span class="section-num">// 07</span>
+      <h2>AI Engineering</h2>
+    </div>
+    <p class="section-tagline">Building AI-powered systems: RAG pipelines, vector databases, agents, orchestration, and the full stack of tools that turn model APIs into products.</p>
+
+    <div class="resources-grid">
+      <div class="resource-card featured">
+        <div class="card-type">
+          <span class="type-badge type-course">Course</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">LLM Zoomcamp</div>
+        <div class="resource-author">DataTalks.Club · GitHub</div>
+        <p class="resource-desc">10-week free cohort program covering RAG, vector databases, evaluation, agents, and production deployment. All materials freely available on GitHub year-round. One of the best free structured AI engineering programs.</p>
+        <a class="resource-link" href="https://github.com/DataTalks-Club/llm-zoomcamp" target="_blank">github.com/DataTalks-Club/llm-zoomcamp</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-blog">Guide</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">Prompt Engineering Guide</div>
+        <div class="resource-author">DAIR.AI · promptingguide.ai</div>
+        <p class="resource-desc">Comprehensive, community-maintained guide to prompting techniques: zero-shot, few-shot, CoT, ReAct, RAG, and more. Regularly updated with new research. The standard reference for prompt engineering.</p>
+        <a class="resource-link" href="https://www.promptingguide.ai" target="_blank">promptingguide.ai</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-repo">Cookbook</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">OpenAI Cookbook</div>
+        <div class="resource-author">OpenAI · GitHub</div>
+        <p class="resource-desc">Production-ready code examples: RAG with vector DBs, structured outputs, function calling, embeddings, multimodal patterns, agent handoffs, and more. Updated monthly. Concrete code, not theory.</p>
+        <a class="resource-link" href="https://cookbook.openai.com" target="_blank">cookbook.openai.com</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-course">Course</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">Building Agentic RAG with LlamaIndex</div>
+        <div class="resource-author">DeepLearning.AI</div>
+        <p class="resource-desc">Covers query routing, tool use, multi-step RAG, and agentic document intelligence. Hands-on labs with LlamaIndex. Practical for engineers building RAG pipelines that go beyond simple vector lookup.</p>
+        <a class="resource-link" href="https://www.deeplearning.ai/short-courses/building-agentic-rag-with-llamaindex/" target="_blank">deeplearning.ai</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-repo">Docs</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">LangChain Expression Language (LCEL) Docs</div>
+        <div class="resource-author">LangChain</div>
+        <p class="resource-desc">The canonical reference for building composable LLM chains. LCEL syntax, streaming, async, tracing with LangSmith. Even if you don't use LangChain, the patterns translate to any orchestration framework.</p>
+        <a class="resource-link" href="https://python.langchain.com/docs/expression_language/" target="_blank">python.langchain.com</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-course">Course</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">AI Agents in LangGraph</div>
+        <div class="resource-author">DeepLearning.AI</div>
+        <p class="resource-desc">Build stateful, multi-step agents with LangGraph: agentic search, human-in-the-loop, persistence, memory, and multi-agent networks. The most practical free course on production-grade agent architecture.</p>
+        <a class="resource-link" href="https://www.deeplearning.ai/short-courses/ai-agents-in-langgraph/" target="_blank">deeplearning.ai</a>
+      </div>
+    </div>
+
+    <div class="also-see">
+      <span class="also-see-label">Also See:</span>
+      <a class="also-link" href="https://github.com/anthropics/anthropic-cookbook" target="_blank">Anthropic Cookbook (Claude)</a>
+      <a class="also-link" href="https://docs.llamaindex.ai/en/stable/" target="_blank">LlamaIndex Docs</a>
+      <a class="also-link" href="https://python.useinstructor.com" target="_blank">Instructor (Structured Outputs)</a>
+      <a class="also-link" href="https://github.com/modelcontextprotocol/specification" target="_blank">MCP Spec (Anthropic)</a>
+    </div>
+  </section>
+
+  <!-- ==================== 08 PRODUCTION ==================== -->
+  <section id="production">
+    <div class="section-header">
+      <span class="section-num">// 08</span>
+      <h2>Production AI Systems</h2>
+    </div>
+    <p class="section-tagline">Getting models from notebook to production — and keeping them working. MLOps, monitoring, data drift, deployment patterns, and the operational realities of AI systems at scale.</p>
+
+    <div class="resources-grid">
+      <div class="resource-card featured">
+        <div class="card-type">
+          <span class="type-badge type-course">Course</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">MLOps Zoomcamp</div>
+        <div class="resource-author">DataTalks.Club</div>
+        <p class="resource-desc">Free end-to-end MLOps curriculum: experiment tracking (MLflow), orchestration (Mage/Prefect), deployment (FastAPI + Docker), monitoring (Evidently), and CI/CD for ML. All materials freely available on GitHub.</p>
+        <a class="resource-link" href="https://github.com/DataTalks-Club/mlops-zoomcamp" target="_blank">github.com/DataTalks-Club/mlops-zoomcamp</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-course">Course</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">Made With ML — MLOps Course</div>
+        <div class="resource-author">Goku Mohandas · madewithml.com</div>
+        <p class="resource-desc">Covers ML system design, data validation, model training pipelines, testing, deployment, and monitoring. Code-heavy, engineer-focused. One of the most complete free MLOps references available.</p>
+        <a class="resource-link" href="https://madewithml.com" target="_blank">madewithml.com</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-repo">Docs</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">MLflow Documentation</div>
+        <div class="resource-author">MLflow / Databricks</div>
+        <p class="resource-desc">The standard open-source ML lifecycle platform: experiment tracking, model registry, deployment, and now LLM support. Docs include full tutorials. Essential tool knowledge for any ML engineering role.</p>
+        <a class="resource-link" href="https://mlflow.org/docs/latest/index.html" target="_blank">mlflow.org/docs</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-blog">Guide</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">Evidently AI — ML Monitoring Guide</div>
+        <div class="resource-author">Evidently AI</div>
+        <p class="resource-desc">Deep-dive guides on data drift, model drift, data quality checks, and building ML monitoring dashboards. Both theoretical explanations and working code. The most complete free resource on ML monitoring.</p>
+        <a class="resource-link" href="https://www.evidentlyai.com/ml-in-production" target="_blank">evidentlyai.com/ml-in-production</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-course">Course</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">Machine Learning Engineering for Production (MLOps) Specialization</div>
+        <div class="resource-author">Andrew Ng · DeepLearning.AI · Coursera</div>
+        <p class="resource-desc">4-course specialization on deploying ML systems: data lifecycle, model pipelines, deployment strategies, and monitoring. Free to audit. The most academic treatment of production ML from a trusted source.</p>
+        <a class="resource-link" href="https://www.coursera.org/specializations/machine-learning-engineering-for-production-mlops" target="_blank">coursera.org</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-blog">Reference</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">Google ML Production Readiness Checklist</div>
+        <div class="resource-author">Google Research · NIPS 2015</div>
+        <p class="resource-desc">"Hidden Technical Debt in Machine Learning Systems" — the famous Google paper that every production ML engineer should read. Covers boundary erosion, feedback loops, data dependencies, and system-level anti-patterns.</p>
+        <a class="resource-link" href="https://proceedings.neurips.cc/paper_files/paper/2015/file/86df7dcfd896fcaf2674f757a2463eba-Paper.pdf" target="_blank">proceedings.neurips.cc</a>
+      </div>
+    </div>
+
+    <div class="also-see">
+      <span class="also-see-label">Also See:</span>
+      <a class="also-link" href="https://github.com/ray-project/ray" target="_blank">Ray (distributed ML serving)</a>
+      <a class="also-link" href="https://www.featurestore.org" target="_blank">Feature Store Comparison (featurestore.org)</a>
+      <a class="also-link" href="https://wandb.ai/site/articles/model-monitoring" target="_blank">W&B Model Monitoring Guide</a>
+    </div>
+  </section>
+
+  <!-- ==================== 09 SAFETY ==================== -->
+  <section id="safety">
+    <div class="section-header">
+      <span class="section-num">// 09</span>
+      <h2>Safety & Ethics</h2>
+    </div>
+    <p class="section-tagline">Bias, hallucination, prompt injection, privacy, and governance. Not soft skills — technical discipline with regulatory consequences. These resources are increasingly non-optional.</p>
+
+    <div class="resources-grid">
+      <div class="resource-card featured">
+        <div class="card-type">
+          <span class="type-badge type-course">Course</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">AI Safety Fundamentals — Alignment Course</div>
+        <div class="resource-author">BlueDot Impact (formerly AGI Safety Fundamentals)</div>
+        <p class="resource-desc">8-week course on AI alignment and safety: RLHF, interpretability, corrigibility, and the technical landscape of AI safety research. Structured as a cohort or self-paced. Free with optional facilitated sessions.</p>
+        <a class="resource-link" href="https://aisafetyfundamentals.com/alignment-curriculum/" target="_blank">aisafetyfundamentals.com</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-course">Course</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">Red Teaming LLM Applications</div>
+        <div class="resource-author">DeepLearning.AI</div>
+        <p class="resource-desc">Covers prompt injection, jailbreaking, harmful outputs, and systematic red-teaming techniques for LLM applications. Practical, attack-focused perspective. Essential for any engineer deploying LLMs to users.</p>
+        <a class="resource-link" href="https://www.deeplearning.ai/short-courses/red-teaming-llm-applications/" target="_blank">deeplearning.ai</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-blog">Reference</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">Anthropic's Model Card & Responsible Scaling Policy</div>
+        <div class="resource-author">Anthropic</div>
+        <p class="resource-desc">How a frontier AI lab thinks about safety commitments, evaluation criteria, and risk thresholds. The Responsible Scaling Policy documents are among the most concrete published approaches to AI safety governance.</p>
+        <a class="resource-link" href="https://www.anthropic.com/responsible-scaling-policy" target="_blank">anthropic.com</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-course">Course</span>
+          <span class="free-tag">Free to Audit</span>
+        </div>
+        <div class="resource-title">Fairness in Machine Learning — Google</div>
+        <div class="resource-author">Google Developers</div>
+        <p class="resource-desc">Covers types of bias, fairness metrics (demographic parity, equalized odds), and how to identify and address unfairness in ML pipelines. Concise, technical, and directly applicable to production systems.</p>
+        <a class="resource-link" href="https://developers.google.com/machine-learning/crash-course/fairness/video-lecture" target="_blank">developers.google.com</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-blog">Research</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">Mechanistic Interpretability Research</div>
+        <div class="resource-author">Anthropic Research Blog</div>
+        <p class="resource-desc">Anthropic's published research on understanding what happens inside neural networks: circuits, features, superposition, and monosemanticity. The frontier of understanding AI systems from the inside out.</p>
+        <a class="resource-link" href="https://www.anthropic.com/research" target="_blank">anthropic.com/research</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-blog">Policy</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">EU AI Act — Official Text & Summary</div>
+        <div class="resource-author">European Parliament</div>
+        <p class="resource-desc">The landmark EU regulation on AI systems. Risk-based framework with real compliance requirements for high-risk applications. As an engineer, you need to understand what "high-risk AI" means legally. Full text freely available.</p>
+        <a class="resource-link" href="https://www.europarl.europa.eu/topics/en/article/20230601STO93804/eu-ai-act-first-regulation-on-artificial-intelligence" target="_blank">europarl.europa.eu</a>
+      </div>
+    </div>
+
+    <div class="also-see">
+      <span class="also-see-label">Also See:</span>
+      <a class="also-link" href="https://oecd.ai/en/" target="_blank">OECD AI Policy Observatory</a>
+      <a class="also-link" href="https://www.nist.gov/artificial-intelligence/ai-risk-management-framework" target="_blank">NIST AI Risk Management Framework</a>
+      <a class="also-link" href="https://github.com/leondz/garak" target="_blank">Garak (LLM Vulnerability Scanner)</a>
+    </div>
+  </section>
+
+  <!-- ==================== 10 LANDSCAPE ==================== -->
+  <section id="landscape">
+    <div class="section-header">
+      <span class="section-num">// 10</span>
+      <h2>The AI Landscape</h2>
+    </div>
+    <p class="section-tagline">Staying current in a field that moves every 3–6 months. The trackers, newsletters, and research hubs that keep senior engineers calibrated to what's actually happening.</p>
+
+    <div class="resources-grid">
+      <div class="resource-card featured">
+        <div class="card-type">
+          <span class="type-badge type-blog">Annual Report</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">State of AI Report</div>
+        <div class="resource-author">Nathan Benaich & Air Street Capital</div>
+        <p class="resource-desc">The definitive annual report on AI: research breakthroughs, industry trends, compute, policy, and safety. Published every October. Read it cover to cover — it's the most comprehensive snapshot of where AI actually is.</p>
+        <a class="resource-link" href="https://www.stateof.ai" target="_blank">stateof.ai</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-tool">Platform</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">Papers With Code</div>
+        <div class="resource-author">Meta AI Research</div>
+        <p class="resource-desc">Tracks ML papers with their implementations: SOTA leaderboards by task, trending papers, code availability. The fastest way to find reference implementations and understand what's actually beating what on which benchmarks.</p>
+        <a class="resource-link" href="https://paperswithcode.com" target="_blank">paperswithcode.com</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-blog">Newsletter</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">The Batch</div>
+        <div class="resource-author">Andrew Ng · DeepLearning.AI</div>
+        <p class="resource-desc">Weekly AI newsletter with concise summaries of the most important research papers, industry news, and practical implications. Signal-to-noise ratio is unusually high. Good for staying current without deep paper-diving.</p>
+        <a class="resource-link" href="https://www.deeplearning.ai/the-batch/" target="_blank">deeplearning.ai/the-batch</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-blog">Newsletter</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">The Gradient</div>
+        <div class="resource-author">thegradient.pub</div>
+        <p class="resource-desc">Long-form articles, interviews, and analysis on ML research, industry, and policy. More depth than most newsletters. Written by practitioners and researchers. Good for going deeper on specific topics of interest.</p>
+        <a class="resource-link" href="https://thegradient.pub" target="_blank">thegradient.pub</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-tool">Platform</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">arXiv — cs.AI / cs.LG / cs.CL</div>
+        <div class="resource-author">arXiv.org (Cornell)</div>
+        <p class="resource-desc">Where AI research is published first. cs.AI (AI), cs.LG (machine learning), cs.CL (NLP). Use Semantic Scholar or arxiv-sanity.com to filter the firehose. Most significant papers land here before peer review.</p>
+        <a class="resource-link" href="https://arxiv.org/list/cs.LG/recent" target="_blank">arxiv.org/list/cs.LG/recent</a>
+      </div>
+
+      <div class="resource-card">
+        <div class="card-type">
+          <span class="type-badge type-tool">Platform</span>
+          <span class="free-tag">Free</span>
+        </div>
+        <div class="resource-title">Hugging Face Hub — Model & Dataset Explorer</div>
+        <div class="resource-author">Hugging Face</div>
+        <p class="resource-desc">The NPM of AI models. 500k+ models, datasets, and Spaces. Model cards, benchmarks, community discussions. Essential for model selection, understanding current open-weight SOTA, and finding fine-tunes.</p>
+        <a class="resource-link" href="https://huggingface.co/models" target="_blank">huggingface.co/models</a>
+      </div>
+    </div>
+
+    <div class="also-see">
+      <span class="also-see-label">Also See:</span>
+      <a class="also-link" href="https://lmarena.ai" target="_blank">LMSYS Chatbot Arena (live model rankings)</a>
+      <a class="also-link" href="https://newsletter.pragmaticengineer.com" target="_blank">The Pragmatic Engineer (AI + Engineering)</a>
+      <a class="also-link" href="https://simonwillison.net" target="_blank">Simon Willison's Weblog (LLMs in practice)</a>
+      <a class="also-link" href="https://github.com/dair-ai/ML-Papers-of-the-Week" target="_blank">ML Papers of the Week (DAIR.AI)</a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div><strong>AI Resources for Senior Engineers</strong> — 60+ free links across 10 domains.</div>
+  <div style="font-size:11px; color: var(--muted);">All resources free or free-to-audit · Verified 2025 · Click any link to open</div>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.06 });
+  document.querySelectorAll('section').forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
